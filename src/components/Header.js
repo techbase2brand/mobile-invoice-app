@@ -19,7 +19,7 @@ const Header = ({title, navigation}) => {
     {
       name: 'bank',
       label: 'Bank Detail',
-      action: () => navigation.navigate('BankDetail'),
+      action: () => navigation.navigate('BankDetails'),
     },
     {
       name: 'user',
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   closeButton: {
     // alignSelf: 'flex-end',
     justifyContent:"space-between",
-    marginVertical: 20,
+    marginVertical: 20
   },
   menuItem: {
     flexDirection: 'row',

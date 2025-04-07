@@ -4,7 +4,7 @@ import Header from '../components/Header';
 
 export default function HomeScreen({navigation}) {
   return (
-    <View style={{flex: 1 , marginTop:10,}}>
+    <View style={{flex: 1 , marginTop:20,}}>
       <Header title="Home" navigation={navigation} />
       <View style={styles.container}>
         <Text style={styles.title}>Home Screenfgfdgd</Text>
