@@ -40,11 +40,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DetailsScreen = ({navigation}) => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
   const [tokenData, setTokenData] = useState('');
 
-  const [selectedId, setSelectedId] = useState(null);
   const itemsPerPage = 10; // Set how many items per page you want
   const totalPages = Math.ceil(data.length / itemsPerPage);
   // Function to paginate data

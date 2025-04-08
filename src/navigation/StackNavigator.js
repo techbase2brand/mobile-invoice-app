@@ -26,6 +26,12 @@ import LoginScreen from '../screens/LoginScreen';
 import { useSelector } from 'react-redux';
 import AddCompanyScreen from '../screens/AddCompanyScreen';
 import BankDetails from '../screens/BankDetails';
+import AddBankDetail from '../screens/AddBankDetail';
+import ClientDetails from '../screens/ClientDetails';
+import AddClientDetail from '../screens/AddClientDetail';
+import InvoicesDetails from '../screens/InvoicesDetails';
+import EmployeesScreen from '../screens/EmployeesScreen';
+import AddEmployee from '../screens/AddEmployee';
 const Stack = createNativeStackNavigator();
 
 export default function StackNavigator() {
@@ -53,6 +59,14 @@ export default function StackNavigator() {
             <Stack.Screen name="Details" component={DetailsScreen} />
             <Stack.Screen name="AddCompany" component={AddCompanyScreen} />
             <Stack.Screen name="BankDetails" component={BankDetails} />
+            <Stack.Screen name="AddBankDetail" component={AddBankDetail} />
+            <Stack.Screen name="ClientDetails" component={ClientDetails} />
+            <Stack.Screen name="AddClientDetail" component={AddClientDetail} />
+            <Stack.Screen name="InvoicesDetails" component={InvoicesDetails} />
+            <Stack.Screen name="Employees" component={EmployeesScreen} />
+            <Stack.Screen name="AddEmployee" component={AddEmployee} />
+
+
           </>
         ) : (
           <>

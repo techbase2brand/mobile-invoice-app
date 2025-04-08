@@ -24,17 +24,17 @@ const Header = ({title, navigation}) => {
     {
       name: 'user',
       label: 'Client Detail',
-      action: () => navigation.navigate('ClientDetail'),
+      action: () => navigation.navigate('ClientDetails'),
     },
     {
       name: 'file-text',
       label: 'Invoice Detail',
-      action: () => navigation.navigate('InvoiceDetail'),
+      action: () => navigation.navigate('InvoicesDetails'),
     },
     {
       name: 'user-plus',
       label: 'Add Employee',
-      action: () => navigation.navigate('AddEmployee'),
+      action: () => navigation.navigate('Employees'),
     },
     {
       name: 'money',
