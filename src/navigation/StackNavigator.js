@@ -32,6 +32,8 @@ import AddClientDetail from '../screens/AddClientDetail';
 import InvoicesDetails from '../screens/InvoicesDetails';
 import EmployeesScreen from '../screens/EmployeesScreen';
 import AddEmployee from '../screens/AddEmployee';
+import WagesScreen from '../screens/WagesScreen';
+import AddWagesForm from '../screens/AddWagesForm';
 const Stack = createNativeStackNavigator();
 
 export default function StackNavigator() {
@@ -43,7 +45,6 @@ export default function StackNavigator() {
       const token = await AsyncStorage.getItem('token');
       setIsAuthenticated(!!token);
     };
-
     console.log("isAuthenticated>>",isAuthenticated);
     checkToken();
   }, []);
@@ -65,6 +66,8 @@ export default function StackNavigator() {
             <Stack.Screen name="InvoicesDetails" component={InvoicesDetails} />
             <Stack.Screen name="Employees" component={EmployeesScreen} />
             <Stack.Screen name="AddEmployee" component={AddEmployee} />
+            <Stack.Screen name="Wages" component={WagesScreen} />
+            <Stack.Screen name="AddWagesForm" component={AddWagesForm} />
 
 
           </>

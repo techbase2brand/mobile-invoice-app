@@ -39,7 +39,7 @@ const Header = ({title, navigation}) => {
     {
       name: 'money',
       label: 'Create Wages',
-      action: () => navigation.navigate('CreateWages'),
+      action: () => navigation.navigate('Wages'),
     },
     {
       name: 'credit-card',
