@@ -44,7 +44,7 @@ const Header = ({title, navigation}) => {
     {
       name: 'credit-card',
       label: 'Credit Cards',
-      action: () => navigation.navigate('CreditCards'),
+      action: () => navigation.navigate('CreditCard'),
     },
     {
       name: 'history',

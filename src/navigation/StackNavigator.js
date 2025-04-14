@@ -34,6 +34,13 @@ import EmployeesScreen from '../screens/EmployeesScreen';
 import AddEmployee from '../screens/AddEmployee';
 import WagesScreen from '../screens/WagesScreen';
 import AddWagesForm from '../screens/AddWagesForm';
+// import FinalWagesScreen from '../screens/FinalWagesScreen';
+import WagesPdf from '../screens/WagesPdf';
+import CreditCardListScreen from '../screens/CarditCardListScreen';
+import CreditForm from '../screens/CreditForm';
+import CreditCardHistory from '../screens/CreditCardHistory';
+
+
 const Stack = createNativeStackNavigator();
 
 export default function StackNavigator() {
@@ -68,6 +75,11 @@ export default function StackNavigator() {
             <Stack.Screen name="AddEmployee" component={AddEmployee} />
             <Stack.Screen name="Wages" component={WagesScreen} />
             <Stack.Screen name="AddWagesForm" component={AddWagesForm} />
+            <Stack.Screen name="WagesPdf" component={WagesPdf} />
+            <Stack.Screen name="CreditCard" component={CreditCardListScreen} />
+            <Stack.Screen name="CreditForm" component={CreditForm} />
+            <Stack.Screen name="CreditCardHistory" component={CreditCardHistory} />
+
 
 
           </>

@@ -1,80 +1,92 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   TextInput,
-  Button,
-  Modal,
-  FlatList,
+  ScrollView,
   TouchableOpacity,
   StyleSheet,
-} from 'react-native';
+  Alert,
+  Modal,
+  FlatList,
+  SafeAreaView,
+} from "react-native";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import axios from 'axios';
-import moment from 'moment';
-import {REACT_APP_API_BASE_URL} from '../constans/Constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import moment from "moment";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { REACT_APP_API_BASE_URL } from "../constans/Constants";
+
 const AddWagesForm = ({navigation, route}) => {
-  const id = route.params || {};
-  const [empName, setEmpName] = useState('');
-  const [familyMember, setFamilyMember] = useState('');
-  const [joinDate, setJoinDate] = useState('');
-  const [department, setDepartment] = useState('');
-  const [designation, setDesignation] = useState('');
-  const [empCode, setEmpCode] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [logo, setLogo] = useState('');
-  const [state, setState] = useState('');
+  // State variables
+  const [empName, setEmpName] = useState("");
+  const [familyMember, setFamilyMember] = useState("");
+  const [joinDate, setJoinDate] = useState("");
+  const [department, setDepartment] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [empCode, setEmpCode] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [logo, setLogo] = useState("");
+  const [state, setState] = useState("");
   const [client, setClient] = useState([]);
   const [wages, setWages] = useState(null);
-  const [grosssalary, setgrosssalary] = useState('');
-  const [netsalary, setnetSalary] = useState('');
-  console.log('wageswages>>>', client);
+  const [grosssalary, setgrosssalary] = useState("");
+  const [netsalary, setnetSalary] = useState("");
+  
+  const [basic, setBasic] = useState("");
+  const [med, setMed] = useState("");
+  const [children, setChildren] = useState("");
+  const [house, setHouse] = useState("");
+  const [conveyance, setConveyance] = useState("");
+  const [earning, setEarning] = useState("");
+  const [arrear, setArrear] = useState("");
+  const [reimbursement, setReimbursement] = useState("");
+  const [health, setHealth] = useState("");
+  const [proftax, setProfTax] = useState("");
+  const [epf, setEPF] = useState("");
+  const [tds, setTds] = useState("");
+  const [daysMonth, setDaysMonth] = useState("");
+  const [workingDays, setWorkingDays] = useState("");
+  const [causelLeave, setCauselLeave] = useState("");
+  const [medicalLeave, setmedicalLeave] = useState("");
+  const [absent, setAbsent] = useState("");
+  const [chooseDate, setChooseDate] = useState(new Date());
+  const [sign, setSign] = useState("");
+  const id = route?.params?.wagesId;
 
-  const [basic, setBasic] = useState('');
-  const [med, setMed] = useState('');
-  const [children, setChildren] = useState('');
-  const [house, setHouse] = useState('');
-  const [conveyance, setConveyance] = useState('');
-  const [earning, setEarning] = useState('');
-  const [arrear, setArrear] = useState('');
-  const [reimbursement, setReimbursement] = useState('');
-  const [health, setHealth] = useState('');
-  const [proftax, setProfTax] = useState('');
-  const [epf, setEPF] = useState('');
-  const [tds, setTds] = useState('');
-  const [daysMonth, setDaysMonth] = useState('');
-  const [workingDays, setWorkingDays] = useState('');
-  const [causelLeave, setCauselLeave] = useState('');
-  const [medicalLeave, setmedicalLeave] = useState('');
-  const [absent, setAbsent] = useState('');
-  const [chooseDate, setChooseDate] = useState(null);
-  const [sign, setSign] = useState('');
+  console.log("route?.paramsroute?.params",route?.params);
+  
   const [img, setImg] = useState(false);
   const [companyLogos, setCompanyLogos] = useState([]);
-  const [selectedLogo, setSelectedLogo] = useState('');
+  const [selectedLogo, setSelectedLogo] = useState("");
   const [basicCut, setBasicCut] = useState(0);
   const [grossSalaryDeduction, setGrossSalaryDeduction] = useState(0);
   const [allTax, setAllTax] = useState(0);
 
-  // Add new states for modals
-  const [showClientModal, setShowClientModal] = useState(false);
-  const [showDepartmentModal, setShowDepartmentModal] = useState(false);
-  const [showDaysModal, setShowDaysModal] = useState(false);
-  const [showLogoModal, setShowLogoModal] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  // Modal states
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [isEmployeeModalVisible, setEmployeeModalVisible] = useState(false);
+  const [isDepartmentModalVisible, setDepartmentModalVisible] = useState(false);
+  const [isDaysModalVisible, setDaysModalVisible] = useState(false);
+  const [isLogoModalVisible, setLogoModalVisible] = useState(false);
 
   // Department options
   const departmentOptions = [
-    'web-development & Design',
-    'graphic-design',
-    'digital-marketing',
-    'business-development',
-    'HR & Admin',
+    { id: 1, name: "Web Development & Design", value: "web-development & Design" },
+    { id: 2, name: "Graphic Design", value: "graphic-design" },
+    { id: 3, name: "Digital Marketing", value: "digital-marketing" },
+    { id: 4, name: "Business Development", value: "business-development" },
+    { id: 5, name: "HR & Admin", value: "HR & Admin" },
   ];
 
   // Days options
-  const daysOptions = ['31', '30', '28', '29'];
+  const daysOptions = [
+    { id: 1, name: "31", value: "31" },
+    { id: 2, name: "30", value: "30" },
+    { id: 3, name: "28", value: "28" },
+    { id: 4, name: "29", value: "29" },
+  ];
 
   useEffect(() => {
     if (id) {
@@ -84,51 +96,59 @@ const AddWagesForm = ({navigation, route}) => {
   }, [id]);
 
   useEffect(() => {
-    fetch(`${REACT_APP_API_BASE_URL}/api/get-companyLogo`)
-      .then(response => response.json())
-      .then(data => {
+    fetchCompanyLogos();
+  }, []);
+
+  useEffect(() => {
+    fetchEmployeeData();
+  }, []);
+
+  const fetchCompanyLogos = async () => {
+    try {
+      const response = await fetch(`${REACT_APP_API_BASE_URL}/api/get-companyLogo`);
+      const data = await response.json();
         if (data.success) {
           setCompanyLogos(data.data);
         } else {
-          console.error('Failed to fetch company logos:', data.message);
+          console.error("Failed to fetch company logos:", data.message);
         }
-      })
-      .catch(error => console.error('Error fetching company logos:', error));
-  }, []);
+    } catch (error) {
+      console.error("Error fetching company logos:", error);
+    }
+  };
 
-  useEffect(async () => {
-    const token = await AsyncStorage.getItem('token'); // Retrieve the token from localStorage
-    console.log('usetokentokentoken', token);
-    const headers = {
-      Authorization: `Bearer ${token}`, // Use the token from localStorage
-      'Content-Type': 'application/json', // Add any other headers if needed
-    };
-    const apiUrl = `${REACT_APP_API_BASE_URL}/api/get-empData`;
-    axios
-      .get(apiUrl, {headers})
-      .then(response => {
-        setClient(response.data.data);
-      })
-      .catch(error => {
-        console.error('Error fetching invoices:', error);
-      });
-  }, []);
-
-  const fetchInvoiceDetail = async id => {
-    const token = AsyncStorage.getItem('token'); // Retrieve the token from localStorage
-    const headers = {
-      Authorization: `Bearer ${token}`, // Use the token from localStorage
-      'Content-Type': 'application/json', // Add any other headers if needed
-    };
+  const fetchEmployeeData = async () => {
     try {
+      const token = await AsyncStorage.getItem("token");
+    const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      };
+      const response = await axios.get(
+        `${REACT_APP_API_BASE_URL}/api/get-empData`,
+        { headers }
+      );
+        setClient(response.data.data);
+    } catch (error) {
+      console.error("Error fetching employee data:", error);
+    }
+  };
+
+  const fetchInvoiceDetail = async (id) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      };
       const response = await axios.get(
         `${REACT_APP_API_BASE_URL}/api/wages-get/${id}`,
-        {headers},
+        { headers }
       );
       const bankDetailData = response.data.data;
       setWages(bankDetailData);
     } catch (error) {
-      console.error('Error fetching bank detail:', error);
+      console.error("Error fetching wages detail:", error);
     }
   };
 
@@ -167,53 +187,18 @@ const AddWagesForm = ({navigation, route}) => {
     }
   }, [wages]);
 
-  //   const handleClientChange = (event) => {
-  //     if (!event.target.value) {
-  //       setFamilyMember("");
-  //       setJoinDate("");
-  //       setDepartment("");
-  //       setDesignation("");
-  //       setEmpCode("");
-  //       setCompanyName("");
-  //       setLogo("");
-  //     }
-  //     const selectedClientId = event.target.value;
-  //     setState(selectedClientId);
-  //     setEmpName(selectedClientId);
-  //     const selectedClient = client.find(
-  //       (client) => client._id === selectedClientId
-  //     );
-  //     if (selectedClient) {
-  //       setFamilyMember(selectedClient.familyMember);
-  //       setJoinDate(selectedClient.joinDate);
-  //       setDepartment(selectedClient.department);
-  //       setDesignation(selectedClient.designation);
-  //       setEmpCode(selectedClient.empCode);
-  //       setCompanyName(selectedClient.companyName);
-  //       setLogo(selectedClient.companylogo);
-  //     }
-  //   };
-
-  const handleClientSelect = selectedClientId => {
-    if (!selectedClientId) {
-      setFamilyMember('');
-      setJoinDate('');
-      setDepartment('');
-      setDesignation('');
-      setEmpCode('');
-      setCompanyName('');
-      setLogo('');
-      return;
+  const handleClientChange = (selectedClient) => {
+    if (!selectedClient) {
+      setFamilyMember("");
+      setJoinDate("");
+      setDepartment("");
+      setDesignation("");
+      setEmpCode("");
+      setCompanyName("");
+      setLogo("");
     }
-
-    setState(selectedClientId);
-
-    const selectedClient = client.find(
-      client => client._id === selectedClientId,
-    );
-
-    if (selectedClient) {
-      setEmpName(selectedClient.empName);
+    setState(selectedClient._id);
+    setEmpName(selectedClient._id);
       setFamilyMember(selectedClient.familyMember);
       setJoinDate(selectedClient.joinDate);
       setDepartment(selectedClient.department);
@@ -221,19 +206,19 @@ const AddWagesForm = ({navigation, route}) => {
       setEmpCode(selectedClient.empCode);
       setCompanyName(selectedClient.companyName);
       setLogo(selectedClient.companylogo);
-    }
-    setShowClientModal(false);
+    setEmployeeModalVisible(false);
   };
 
-  const handleSubmit = () => {
-    const token = AsyncStorage.getItem('token'); // Retrieve the token from localStorage
+  const handleSubmit = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
     const headers = {
-      Authorization: `Bearer ${token}`, // Use the token from localStorage
-      'Content-Type': 'application/json', // Add any other headers if needed
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
     };
     const selectedEmpName =
-      client.find(item => item._id === empName)?.empName || '';
-    const formattedDate = moment(chooseDate).format('YYYY-MM-DD');
+      client.find((item) => item._id === empName)?.empName || "";
+    const formattedDate = moment(chooseDate).format("YYYY-MM-DD");
     const formData = {
       empName: state,
       familyMember: familyMember,
@@ -262,47 +247,34 @@ const AddWagesForm = ({navigation, route}) => {
       causelLeave: causelLeave,
       medicalLeave: medicalLeave,
       absent: absent,
-      chooseDate: formattedDate === 'Invalid date' ? null : formattedDate,
-      // signature: signaturePayload[0],
+      chooseDate: formattedDate === "Invalid date" ? null : formattedDate,
       companylogo: selectedLogo,
-      netsalary: netsalary,
     };
 
     if (id) {
-      axios
-        .put(`${REACT_APP_API_BASE_URL}/api/update-wages/${id}`, formData, {
-          headers,
-        })
-        .then(response => {
-          navigation.navigate('Wages');
-        })
-        .catch(error => {
-          console.error('Error updating form data:', error);
-        });
+        await axios.put(
+          `${REACT_APP_API_BASE_URL}/api/update-wages/${id}`,
+          formData,
+          { headers }
+        );
+        navigation.navigate("Wages");
     } else {
-      axios
-        .post(`${REACT_APP_API_BASE_URL}/api/created-wages`, formData, {
-          headers,
-        })
-        .then(response => {
-          navigate('Wages');
-        })
-        .catch(error => {
-          console.error('Error submitting form data:', error);
-          toast.error('Error submitting form data', {
-            position: 'bottom-center',
-            autoClose: 2000,
-          });
-        });
+        await axios.post(
+          `${REACT_APP_API_BASE_URL}/api/created-wages`,
+          formData,
+          { headers }
+        );
+        navigation.navigate("Wages");
+      }
+    } catch (error) {
+          console.error("Error submitting form data:", error);
+      Alert.alert("Error", "Failed to submit form data");
     }
   };
-  const handleSelectChange = event => {
-    setSelectedLogo(event.target.value);
-  };
 
-  const handlePaymentStatus = event => {
-    setDaysMonth(event.target.value);
-    const selectedDays = parseInt(event.target.value);
+  const handlePaymentStatus = (value) => {
+    setDaysMonth(value);
+    const selectedDays = parseInt(value);
     let workingDays;
 
     switch (selectedDays) {
@@ -319,48 +291,49 @@ const AddWagesForm = ({navigation, route}) => {
         workingDays = 20;
         break;
       default:
-        workingDays = ''; // Handle other cases as needed
+        workingDays = ""; // Handle other cases as needed
     }
 
     setWorkingDays(workingDays.toString());
+    setDaysModalVisible(false);
   };
 
-  const handleDateChange = date => {
-    const localDate = moment(date).startOf('day').toDate();
-    setChooseDate(localDate);
+  const handleDateConfirm = (date) => {
+    setDatePickerVisibility(false);
+    setChooseDate(date);
   };
+
   useEffect(() => {
     const newBasicCut =
-      parseInt(basic || '0') +
-      parseInt(med || '0') +
-      parseInt(children || '0') +
-      parseInt(house || '0') +
-      parseInt(conveyance || '0') +
-      parseInt(earning || '0') +
-      parseInt(arrear || '0') +
-      parseInt(reimbursement || '0');
+      parseInt(basic || "0") +
+      parseInt(med || "0") +
+      parseInt(children || "0") +
+      parseInt(house || "0") +
+      parseInt(conveyance || "0") +
+      parseInt(earning || "0") +
+      parseInt(arrear || "0") +
+      parseInt(reimbursement || "0");
     setBasicCut(newBasicCut);
   }, [basic, med, children, house, conveyance, earning, arrear, reimbursement]);
 
   useEffect(() => {
     const newAllTax =
-      parseInt(health || '0') +
-      parseInt(proftax || '0') +
-      parseInt(epf || '0') +
-      parseInt(tds || '0');
+      parseInt(health || "0") +
+      parseInt(proftax || "0") +
+      parseInt(epf || "0") +
+      parseInt(tds || "0");
     setAllTax(newAllTax);
   }, [health, proftax, epf, tds]);
 
   useEffect(() => {
     const TotalLeave =
-      parseInt(causelLeave || '0') +
-      parseInt(medicalLeave || '0') +
-      parseInt(absent || '0');
-    const TotalDays = parseInt(daysMonth || '0');
+      parseInt(causelLeave || "0") +
+      parseInt(medicalLeave || "0") +
+      parseInt(absent || "0");
+    const TotalDays = parseInt(daysMonth || "0");
 
     if (TotalDays && TotalLeave) {
-      const newGrossSalaryDeduction =
-        Math.floor(basicCut / TotalDays) * TotalLeave;
+      const newGrossSalaryDeduction = Math.floor(basicCut / TotalDays) * TotalLeave;
       setGrossSalaryDeduction(newGrossSalaryDeduction);
     } else {
       setGrossSalaryDeduction(0); // Ensure it's reset if inputs are invalid
@@ -380,330 +353,403 @@ const AddWagesForm = ({navigation, route}) => {
       setnetSalary(0); // Reset if no basicCut
     }
   }, [basicCut, allTax, grossSalaryDeduction]);
+  
+  const renderInput = (label, value, onChangeText, placeholder, keyboardType = "default", disabled = false) => (
+    <View style={styles.inputContainer}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        style={[styles.input, disabled && styles.disabledInput]}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        keyboardType={keyboardType}
+        editable={!disabled}
+      />
+    </View>
+  );
 
-  // Date picker handlers
-  const handleDateConfirm = date => {
-    const localDate = moment(date).startOf('day').toDate();
-    setChooseDate(localDate);
-    setShowDatePicker(false);
-  };
-
-  // Render methods for modals
-  const renderClientItem = ({item}) => (
-    <TouchableOpacity
-      style={styles.modalItem}
-      onPress={() => handleClientSelect(item._id)}>
-      <Text>{item.empName}</Text>
+  const renderModalItem = (item, onPress) => (
+    <TouchableOpacity style={styles.modalItem} onPress={onPress}>
+      <Text style={styles.modalItemText}>{item.name || item.empName}</Text>
     </TouchableOpacity>
   );
 
-  const renderDepItem = ({item}) => (
-    <TouchableOpacity
-      style={styles.modalItem}
-      onPress={() => setDepartment(item)}>
-      <Text>{item}</Text>
-    </TouchableOpacity>
+  // Employee Selection Modal
+  const EmployeeModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isEmployeeModalVisible}
+      onRequestClose={() => setEmployeeModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Select Employee</Text>
+          <FlatList
+            data={client.sort((a, b) => a.empName.localeCompare(b.empName))}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => renderModalItem(item, () => handleClientChange(item))}
+          />
+          <TouchableOpacity
+            style={styles.modalCloseButton}
+            onPress={() => setEmployeeModalVisible(false)}
+          >
+            <Text style={styles.modalCloseButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // Department Selection Modal
+  const DepartmentModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isDepartmentModalVisible}
+      onRequestClose={() => setDepartmentModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Select Department</Text>
+          <FlatList
+            data={departmentOptions}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => renderModalItem(item, () => {
+              setDepartment(item.value);
+              setDepartmentModalVisible(false);
+            })}
+          />
+          <TouchableOpacity
+            style={styles.modalCloseButton}
+            onPress={() => setDepartmentModalVisible(false)}
+          >
+            <Text style={styles.modalCloseButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // Days Selection Modal
+  const DaysModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isDaysModalVisible}
+      onRequestClose={() => setDaysModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Select Days</Text>
+          <FlatList
+            data={daysOptions}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => renderModalItem(item, () => handlePaymentStatus(item.value))}
+          />
+          <TouchableOpacity
+            style={styles.modalCloseButton}
+            onPress={() => setDaysModalVisible(false)}
+          >
+            <Text style={styles.modalCloseButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  // Logo Selection Modal
+  const LogoModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={isLogoModalVisible}
+      onRequestClose={() => setLogoModalVisible(false)}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>Select Company Logo</Text>
+          <FlatList
+            data={companyLogos}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => renderModalItem(item, () => {
+              setSelectedLogo(item.companylogo);
+              setLogoModalVisible(false);
+            })}
+          />
+          <TouchableOpacity
+            style={styles.modalCloseButton}
+            onPress={() => setLogoModalVisible(false)}
+          >
+            <Text style={styles.modalCloseButtonText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.flexRow}>
-        <View style={{flex: 1}}>
-          <View style={{marginBottom: 16}}>
-            <Text style={{fontWeight: 'bold'}}>Emp. Detail</Text>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
+        <View style={styles.section}>
+        <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.backArrow}>←</Text>
+        </TouchableOpacity>
+          <Text style={styles.sectionTitle}>Emp. Detail</Text>
           </View>
-
-          {/* Client Selection */}
-          <TouchableOpacity
-            style={styles.input}
-            onPress={() => setShowClientModal(true)}>
-            <Text>{empName || 'Select Emp. Name'}</Text>
-          </TouchableOpacity>
-
-          {empName && (
-            <>
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                  F/H Name
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="F/H Name"
-                  value={familyMember}
-                  onChangeText={setFamilyMember}
-                />
-              </View>
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                  Date Of Joining
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Date Of Joining"
-                  value={joinDate}
-                  onChangeText={setJoinDate}
-                />
-              </View>
-              {/* Department Selection */}
-              <TouchableOpacity
-                style={styles.input}
-                onPress={() => setShowDepartmentModal(true)}>
-                <Text>{department || 'Select Department'}</Text>
-              </TouchableOpacity>
-
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                  Designation
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Designation"
-                  value={designation}
-                  onChangeText={setDesignation}
-                />
-              </View>
-
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                  Emp. Code
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Emp. Code"
-                  value={empCode}
-                  onChangeText={setEmpCode}
-                />
-              </View>
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                  Company Name
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Company Name"
-                  value={companyName}
-                  onChangeText={setCompanyName}
-                />
-              </View>
-
-              {/* Add other input fields similarly */}
-            </>
-          )}
-          <View style={{marginBottom: 16}}>
-            <Text style={{fontWeight: 'bold'}}>Rate of Baisc/wages</Text>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Select Emp. Name</Text>
+            <TouchableOpacity 
+              style={styles.selectButton}
+              onPress={() => setEmployeeModalVisible(true)}
+            >
+              <Text>
+                {client.find(item => item._id === state)?.empName || "Select Employee"}
+              </Text>
+            </TouchableOpacity>
           </View>
-
-          <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                Gross Salary
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Gross Salary"
-                  value={grosssalary}
-                  onChangeText={setgrosssalary}
-                />
+          
+                {empName && (
+                  <>
+              {renderInput("F/H Name", familyMember, setFamilyMember, "F/H Name")}
+              {renderInput("Date Of Joining", joinDate, setJoinDate, "Date Of Joining")}
+              
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Department</Text>
+                <TouchableOpacity 
+                  style={styles.selectButton}
+                  onPress={() => setDepartmentModalVisible(true)}
+                >
+                  <Text>
+                    {departmentOptions.find(item => item.value === department)?.name || "Select Department"}
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                Basic
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Basic"
-                  value={basic}
-                  onChangeText={setBasic}
-                />
-              </View>
-
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                Med.
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Med."
-                  value={med}
-                  onChangeText={setMed}
-                />
-              </View>
-
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                children education allowance
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="children education allowance"
-                  value={children}
-                  onChangeText={setChildren}
-                />
-              </View>
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                House Rent allowance
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="House Rent allowance"
-                  value={house}
-                  onChangeText={setHouse}
-                />
-              </View>
-
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                Conveyance allowance
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Conveyance allowance"
-                  value={conveyance}
-                  onChangeText={setConveyance}
-                />
-              </View>
-
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                other Earning
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="other Earning"
-                  value={earning}
-                  onChangeText={setEarning}
-                />
-              </View>
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                Arrear
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Arrear"
-                  value={arrear}
-                  onChangeText={setArrear}
-                />
-              </View>
-              <View style={{marginBottom: 4}}>
-                <Text style={{fontWeight: '600', marginBottom: 6}}>
-                Reimbursement
-                </Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Reimbursement"
-                  value={reimbursement}
-                  onChangeText={setReimbursement}
-                />
-              </View>
+              
+              {renderInput("Designation", designation, setDesignation, "Designation")}
+              {renderInput("Emp. Code", empCode, setEmpCode, "Emp. Code")}
+              {renderInput("Company Name", companyName, setCompanyName, "Company Name")}
+                  </>
+                )}
         </View>
 
-        {/* Date Picker */}
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => setShowDatePicker(true)}>
-          <Text>
-            {chooseDate
-              ? moment(chooseDate).format('YYYY-MM-DD')
-              : 'Choose Date'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Rate of Basic/wages</Text>
+          {renderInput("Gross Salary", grosssalary, setgrosssalary, "Gross Salary", "numeric")}
+          {renderInput("Basic", basic, setBasic, "Basic", "numeric")}
+          {renderInput("Med.", med, setMed, "Med.", "numeric")}
+          {renderInput("Children Education Allowance", children, setChildren, "Children Education Allowance", "numeric")}
+          {renderInput("House Rent Allowance", house, setHouse, "House Rent Allowance", "numeric")}
+          {renderInput("Conveyance Allowance", conveyance, setConveyance, "Conveyance Allowance", "numeric")}
+          {renderInput("Other Earning", earning, setEarning, "Other Earning", "numeric")}
+          {renderInput("Arrear", arrear, setArrear, "Arrear", "numeric")}
+          {renderInput("Reimbursement", reimbursement, setReimbursement, "Reimbursement", "numeric")}
+        </View>
 
-        {/* Company Logo Selection */}
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => setShowLogoModal(true)}>
-          <Text>{selectedLogo || 'Select Company Logo'}</Text>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Deduction</Text>
+          {renderInput("Health", health, setHealth, "Health", "numeric")}
+          {renderInput("Prof. Tax", proftax, setProfTax, "Professional Tax", "numeric")}
+          {renderInput("EPF", epf, setEPF, "EPF", "numeric")}
+          {renderInput("TDS", tds, setTds, "TDS", "numeric")}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Attendance/Leave</Text>
+          
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Days of this month</Text>
+            <TouchableOpacity 
+              style={styles.selectButton}
+              onPress={() => setDaysModalVisible(true)}
+            >
+              <Text>{daysMonth || "Select Days"}</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {renderInput("Working Days", workingDays, setWorkingDays, "Working Days", "numeric", !daysMonth || daysMonth)}
+          {renderInput("Casual Leave", causelLeave, setCauselLeave, "Casual Leave", "numeric")}
+          {renderInput("Medical Leave", medicalLeave, setmedicalLeave, "Medical Leave", "numeric")}
+          {renderInput("Absent", absent, setAbsent, "Absent", "numeric")}
+          {renderInput("Total Leave", 
+            (parseInt(causelLeave || "0") + parseInt(medicalLeave || "0") + parseInt(absent || "0")).toString(), 
+            null, 
+            "Total Leave", 
+            "numeric", 
+            true
+          )}
+          
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Choose Date</Text>
+            <TouchableOpacity 
+              style={styles.selectButton}
+              onPress={() => setDatePickerVisibility(true)}
+            >
+              <Text>{moment(chooseDate).format("YYYY-MM-DD")}</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {renderInput("Net Salary", netsalary, setnetSalary, "Net Salary", "numeric")}
+          
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Select Company Logo</Text>
+            <TouchableOpacity 
+              style={styles.selectButton}
+              onPress={() => setLogoModalVisible(true)}
+            >
+              <Text>
+                {companyLogos.find(item => item.companylogo === selectedLogo)?.name || "Select Company Logo"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitButtonText}>{id ? "Update" : "Submit"}</Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
 
       {/* Modals */}
-      <Modal visible={showClientModal} transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <FlatList
-              data={client.sort((a, b) => a.empName.localeCompare(b.empName))}
-              keyExtractor={item => item._id}
-              renderItem={renderClientItem}
-            />
-            <Text
-              style={{fontSize: 18, fontWeight: '800', textAlign: 'center'}}
-              onPress={() => setShowClientModal(false)}>
-              Close
-            </Text>
-          </View>
-        </View>
-      </Modal>
-
-      {/* DeparmentModals */}
-      <Modal visible={showDepartmentModal} transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <FlatList
-              data={departmentOptions}
-              keyExtractor={item => item}
-              renderItem={renderDepItem}
-            />
-            <Text
-              style={{fontSize: 18, fontWeight: '800', textAlign: 'center'}}
-              onPress={() => setShowDepartmentModal(false)}>
-              Close
-            </Text>
-          </View>
-        </View>
-      </Modal>
-
+      <EmployeeModal />
+      <DepartmentModal />
+      <DaysModal />
+      <LogoModal />
+      
+      {/* Date Picker */}
       <DateTimePickerModal
-        isVisible={showDatePicker}
+        isVisible={isDatePickerVisible}
         mode="date"
         onConfirm={handleDateConfirm}
-        onCancel={() => setShowDatePicker(false)}
+        onCancel={() => setDatePickerVisibility(false)}
+        date={chooseDate}
       />
-
-      {/* Other modals for department, days, and logo selection */}
-      {/* Add similar modal implementations for other selection fields */}
-
-      <TouchableOpacity
-        style={{
-          backgroundColor: 'blue',
-          padding: 16,
-          borderRadius: 4,
-          alignItems: 'center',
-          marginTop: 16,
-        }}
-        onPress={handleSubmit}>
-        <Text style={{color: 'white'}}>{id ? 'Update' : 'Submit'}</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
-// StyleSheet
 const styles = StyleSheet.create({
-  container: { flex:1,padding: 16},
-  flexRow: {flexDirection: 'row' ,width:"50%"},
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+
+  backArrow: {
+    fontSize: 24,
+    marginRight: 10,
+  },
+  section: {
+    margin: 16,
+    marginBottom: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    flex: 1,
+    marginRight: 24, 
+  },
+  inputContainer: {
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    marginBottom: 8,
+    color: "#555",
+  },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ddd",
     borderRadius: 4,
-    padding: 8,
-    marginBottom: 16,
+    padding: 10,
+    fontSize: 16,
+    backgroundColor: "#fff",
+  },
+  disabledInput: {
+    backgroundColor: "#f0f0f0",
+    color: "#888",
+  },
+  selectButton: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 4,
+    padding: 10,
+    backgroundColor: "#fff",
+  },
+  submitButton: {
+    backgroundColor: "#4a90e2",
+    borderRadius: 4,
+    padding: 16,
+    alignItems: "center",
+    margin: 16,
+    marginTop: 8,
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: 'white',
-    margin: 20,
+    width: "80%",
+    backgroundColor: "white",
+    borderRadius: 8,
     padding: 20,
-    borderRadius: 4,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    maxHeight: "80%",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
   },
   modalItem: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
+    width: "100%",
+  },
+  modalItemText: {
+    fontSize: 16,
+  },
+  modalCloseButton: {
+    marginTop: 16,
+    padding: 10,
+    backgroundColor: "#4a90e2",
+    borderRadius: 4,
+    width: "100%",
+    alignItems: "center",
+  },
+  modalCloseButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

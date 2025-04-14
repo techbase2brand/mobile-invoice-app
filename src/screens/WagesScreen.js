@@ -28,6 +28,8 @@ const WagesScreen = ({navigation}) => {
     useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -136,45 +138,23 @@ const WagesScreen = ({navigation}) => {
     fetchData();
   }, []);
 
-  const renderItem = ({item}) => (
-    <View style={styles.row}>
-      <Text style={styles.cell}>{item.chooseDate || 'Invalid Date'}</Text>
-      <Text style={styles.cell}>{item.employeeName}</Text>
-      <Text style={styles.cell}>{item.familyMember || 'N/A'}</Text>
-      <Text style={styles.cell}>{item.department || 'N/A'}</Text>
-      <Text style={styles.cell}>{item.designation || 'N/A'}</Text>
-      <Text style={styles.cell}>{item.empCode}</Text>
-      <Text style={styles.cell}>{item.companyName}</Text>
-      <Text style={styles.cell}>{item.netsalary}</Text>
-
-      <TouchableOpacity onPress={() => handleEdit(item._id)}>
-      <Icon name="edit" size={20} color="blue" style={styles.icon} />
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => handleDelete(item._id)}>
-      <Icon name="trash" size={20} color="red" style={{marginHorizontal:20}} />
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => generatePDF(item)}>
-        <Text style={styles.pdfButton}>pdf</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-
   const renderHeader = () => (
     <View style={styles.headerRow}>
       <Text style={styles.headerText}>DATE</Text>
       <Text style={styles.headerText}>EMP. NAME</Text>
       <Text style={styles.headerText}>F/H NAME</Text>
-      <Text style={[styles.headerText,{marginLeft:40}]}>DEPT.</Text>
+      <Text style={[styles.headerText, {marginLeft: 40}]}>DEPT.</Text>
       <Text style={styles.headerText}>DESIGNATION</Text>
-      <Text style={[styles.headerText,{marginLeft:20}]}>CODE</Text>
-      <Text style={[styles.headerText,{paddingLeft:0}]}>COMPANY</Text>
-      <Text style={[styles.headerText,{paddingLeft:0}]}>RS</Text>
+      <Text style={[styles.headerText, {marginLeft: 20}]}>CODE</Text>
+      <Text style={[styles.headerText, {paddingLeft: 0}]}>COMPANY</Text>
+      <Text style={[styles.headerText, {paddingLeft: 0}]}>RS</Text>
       <Text style={styles.headerText}>CREATE</Text>
     </View>
   );
+  const confirmDelete = id => {
+    setSelectedId(id);
+    setDeleteModalVisible(true);
+  };
   const handleDelete = async id => {
     const token = await AsyncStorage.getItem('token');
     const headers = {
@@ -191,9 +171,51 @@ const WagesScreen = ({navigation}) => {
     }
   };
 
+
+  const handleEdit = item => {
+    navigation.navigate('AddWagesForm', {
+      wagesId: item._id, // or item._id depending on your data structure
+    });
+  };
+
+  const handleNavigate = item => {
+    navigation.navigate('WagesPdf', {
+      wagesPdfId: item._id, // or item._id depending on your data structure
+    });
+  };
+
+  const renderItem = ({item}) => (
+    <View style={styles.row}>
+      <Text style={styles.cell}>{item.chooseDate || 'Invalid Date'}</Text>
+      <Text style={styles.cell}>{item.employeeName}</Text>
+      <Text style={styles.cell}>{item.familyMember || 'N/A'}</Text>
+      <Text style={styles.cell}>{item.department || 'N/A'}</Text>
+      <Text style={styles.cell}>{item.designation || 'N/A'}</Text>
+      <Text style={styles.cell}>{item.empCode}</Text>
+      <Text style={styles.cell}>{item.companyName}</Text>
+      <Text style={styles.cell}>{item.netsalary}</Text>
+
+      <TouchableOpacity onPress={() => handleEdit(item)}>
+        <Icon name="edit" size={20} color="blue" style={styles.icon} />
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => handleDelete(item._id)}>
+        <Icon
+          name="trash"
+          size={20}
+          color="red"
+          style={{marginHorizontal: 20}}
+        />
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => handleNavigate(item)}>
+        <Text style={styles.pdfButton}>pdf</Text>
+      </TouchableOpacity>
+    </View>
+  );
   return (
     <View style={{marginTop: 20, padding: 16}}>
-      <Header title="Employees" navigation={navigation} />
+      <Header title="Wages" navigation={navigation} />
       <View style={styles.container}>
         <TouchableOpacity
           style={styles.addButton}
@@ -204,52 +226,54 @@ const WagesScreen = ({navigation}) => {
           </View>
         </TouchableOpacity>
       </View>
+      <View style={{flexDirection: 'row', gap: 20}}>
+        <TextInput
+          style={styles.input}
+          placeholder="Search"
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+        />
 
-      <View style ={{flexDirection:"row", gap:20}}>
-      <TextInput
-        style={styles.input}
-        placeholder="Search"
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-      />
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={styles.dropdown}>
+          <Text>
+            {selectedDays ? `Last ${selectedDays} days` : 'Select date range'}
+          </Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity
-        onPress={() => setModalVisible(true)}
-        style={styles.dropdown}>
-        <Text>
-          {selectedDays ? `Last ${selectedDays} days` : 'Select date range'}
-        </Text>
-      </TouchableOpacity>
+        <Modal
+          visible={isModalVisible}
+          transparent={true}
+          animationType="slide">
+          <View style={styles.modalView}>
+            {['7', '30', '90', '180', '365'].map(days => (
+              <TouchableOpacity
+                key={days}
+                onPress={() => {
+                  setSelectedDays(days);
+                  setModalVisible(false);
+                }}>
+                <Text style={styles.modalItem}>Last {days} days</Text>
+              </TouchableOpacity>
+            ))}
+            <Button title="Close" onPress={() => setModalVisible(false)} />
+          </View>
+        </Modal>
 
-      <Modal visible={isModalVisible} transparent={true} animationType="slide">
-        <View style={styles.modalView}>
-          {['7', '30', '90', '180', '365'].map(days => (
-            <TouchableOpacity
-              key={days}
-              onPress={() => {
-                setSelectedDays(days);
-                setModalVisible(false);
-              }}>
-              <Text style={styles.modalItem}>Last {days} days</Text>
-            </TouchableOpacity>
-          ))}
-          <Button title="Close" onPress={() => setModalVisible(false)} />
+        <View style={styles.dateRow}>
+          <TouchableOpacity onPress={() => setStartDatePickerVisibility(true)}>
+            <Text style={styles.datePickerText}>
+              {startDate ? startDate.toDateString() : 'Start Date'}
+            </Text>
+          </TouchableOpacity>
+          <Text>to</Text>
+          <TouchableOpacity onPress={() => setEndDatePickerVisibility(true)}>
+            <Text style={styles.datePickerText}>
+              {endDate ? endDate.toDateString() : 'End Date'}
+            </Text>
+          </TouchableOpacity>
         </View>
-      </Modal>
-
-      <View style={styles.dateRow}>
-        <TouchableOpacity onPress={() => setStartDatePickerVisibility(true)}>
-          <Text style={styles.datePickerText}>
-            {startDate ? startDate.toDateString() : 'Start Date'}
-          </Text>
-        </TouchableOpacity>
-        <Text>to</Text>
-        <TouchableOpacity onPress={() => setEndDatePickerVisibility(true)}>
-          <Text style={styles.datePickerText}>
-            {endDate ? endDate.toDateString() : 'End Date'}
-          </Text>
-        </TouchableOpacity>
-      </View>
       </View>
       <DateTimePickerModal
         isVisible={isStartDatePickerVisible}
@@ -314,17 +338,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   subHeading: {fontSize: 18, marginVertical: 10},
-  input: {borderWidth: 1, padding: 8, marginBottom: 10 ,width:"20%"},
-  dropdown: {borderWidth: 1, padding: 10, marginBottom: 10,width:"20%"},
+  input: {borderWidth: 1, padding: 8, marginBottom: 10, width: '20%'},
+  dropdown: {borderWidth: 1, padding: 10, marginBottom: 10, width: '20%'},
   modalView: {
     backgroundColor: 'white',
     padding: 20,
     marginHorizontal: 40,
-    marginVertical:100,
+    marginVertical: 100,
     borderRadius: 10,
   },
   modalItem: {padding: 10},
-  dateRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 10, gap:10},
+  dateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    gap: 10,
+  },
   datePickerText: {borderWidth: 1, padding: 10},
   itemContainer: {padding: 10, borderBottomWidth: 1, borderColor: '#ccc'},
   deleteText: {color: 'red', marginTop: 5},

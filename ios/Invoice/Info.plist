@@ -46,6 +46,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSDocumentsFolderUsageDescription</key>
+    <string>Your app needs access to the Documents folder to save PDFs.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Your app needs access to the Photo Library to save images.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
