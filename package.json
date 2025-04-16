@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-native-community/checkbox": "^0.5.17",
     "@react-native-community/datetimepicker": "^8.3.0",
-    "@react-native-documents/picker": "^10.1.2",
     "@react-navigation/native": "^7.1.4",
     "@react-navigation/native-stack": "^7.3.8",
     "@react-navigation/stack": "^7.2.8",
@@ -30,6 +30,7 @@
     "react-native-image-picker": "^8.2.0",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-pdf": "^6.7.7",
+    "react-native-pell-rich-editor": "^1.9.0",
     "react-native-print": "^0.11.0",
     "react-native-safe-area-context": "^5.3.0",
     "react-native-screens": "^4.10.0",

@@ -54,7 +54,7 @@ const Header = ({title, navigation}) => {
     {
       name: 'list-alt',
       label: 'Appointment Letter',
-      action: () => navigation.navigate('AppointmentLetter'),
+      action: () => navigation.navigate('Appointment'),
     },
     {
       name: 'leanpub',
