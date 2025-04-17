@@ -43,6 +43,9 @@ import CreateInvoice from '../screens/CreateInvoice';
 import Invoice from '../screens/Invoice';
 import Appointment from '../screens/AppointMent';
 import AppointMentForm from '../screens/AppointMentForm';
+import ExperienceLetter from '../screens/ExperienceLetter';
+import ExperienceLetterForm from '../screens/ExperienceLetterForm';
+import ExperienceLetterPdf from '../screens/ExperienceLetterPdf';
 
 const Stack = createNativeStackNavigator();
 
@@ -89,7 +92,9 @@ export default function StackNavigator() {
           <Stack.Screen name="Invoice" component={Invoice} />
           <Stack.Screen name="Appointment" component={Appointment} />
           <Stack.Screen name="AppointMentForm" component={AppointMentForm} />
-
+          <Stack.Screen name="ExperienceLetter" component={ExperienceLetter} />
+          <Stack.Screen name="ExperienceLetterForm" component={ExperienceLetterForm} />
+          <Stack.Screen name="ExperienceLetterPdf" component={ExperienceLetterPdf} />
 
         </>
       ) : (

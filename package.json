@@ -32,6 +32,7 @@
     "react-native-pdf": "^6.7.7",
     "react-native-pell-rich-editor": "^1.9.0",
     "react-native-print": "^0.11.0",
+    "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "^5.3.0",
     "react-native-screens": "^4.10.0",
     "react-native-vector-icons": "^10.2.0",

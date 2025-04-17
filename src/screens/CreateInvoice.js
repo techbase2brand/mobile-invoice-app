@@ -373,7 +373,6 @@ const CreateInvoice = ({navigation, route}) => {
 
   const handleProjectChange = (value, checked) => {
     console.log('valuevalue', value, checked);
-
     if (checked) {
       setSelectedProject(prevProjects => [...prevProjects, value]);
     } else {

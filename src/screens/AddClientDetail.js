@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Alert,
   ScrollView,
@@ -9,11 +9,10 @@ import {
   View,
 } from 'react-native';
 import axios from 'axios';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { REACT_APP_API_BASE_URL } from '../constans/Constants';
+import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 
-const AddClientDetail = ({navigation,route}) => {
+const AddClientDetail = ({navigation, route}) => {
   const [formData, setFormData] = useState({
     clientName: '',
     company: '',
@@ -27,15 +26,15 @@ const AddClientDetail = ({navigation,route}) => {
   });
   const [error, setError] = useState({});
 
-  const  id  = route?.params?.ClientId || {};
-  
+  const id = route?.params?.ClientId;
+
   useEffect(() => {
     if (id) {
       fetchClientDetail(id);
     }
   }, [id]);
 
-  const fetchClientDetail = async (clientId) => {
+  const fetchClientDetail = async clientId => {
     try {
       const token = await AsyncStorage.getItem('token');
       const headers = {
@@ -44,7 +43,7 @@ const AddClientDetail = ({navigation,route}) => {
       };
       const response = await axios.get(
         `${REACT_APP_API_BASE_URL}/api/get-client-data/${clientId}`,
-        { headers }
+        {headers},
       );
       setFormData(response.data.data);
     } catch (error) {
@@ -53,24 +52,24 @@ const AddClientDetail = ({navigation,route}) => {
   };
 
   const handleChange = (name, value) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setError((prev) => ({ ...prev, [name]: '' }));
+    setFormData(prev => ({...prev, [name]: value}));
+    setError(prev => ({...prev, [name]: ''}));
   };
 
   const handleProjectChange = (value, index) => {
     const updatedProjects = [...formData.project];
     updatedProjects[index] = value;
-    setFormData({ ...formData, project: updatedProjects });
+    setFormData({...formData, project: updatedProjects});
   };
 
   const handleAddProject = () => {
-    setFormData({ ...formData, project: [...formData.project, ''] });
+    setFormData({...formData, project: [...formData.project, '']});
   };
 
-  const handleRemoveProject = (index) => {
+  const handleRemoveProject = index => {
     const updatedProjects = [...formData.project];
     updatedProjects.splice(index, 1);
-    setFormData({ ...formData, project: updatedProjects });
+    setFormData({...formData, project: updatedProjects});
   };
 
   const handleSubmit = async () => {
@@ -96,19 +95,19 @@ const AddClientDetail = ({navigation,route}) => {
         response = await axios.put(
           `${REACT_APP_API_BASE_URL}/api/update-client/${id}`,
           formData,
-          { headers }
+          {headers},
         );
       } else {
         response = await axios.post(
           `${REACT_APP_API_BASE_URL}/api/client-detail`,
           formData,
-          { headers }
+          {headers},
         );
       }
 
       if (response.status === 201 || response.status === 200) {
         Alert.alert('Success', 'Client data saved successfully!', [
-          { text: 'OK', onPress: () => navigation.navigate('ClientDetails') },
+          {text: 'OK', onPress: () => navigation.navigate('ClientDetails')},
         ]);
       }
     } catch (error) {
@@ -130,7 +129,7 @@ const AddClientDetail = ({navigation,route}) => {
         <TextInput
           style={[styles.input, error.clientName && styles.inputError]}
           value={formData.clientName}
-          onChangeText={(value) => handleChange('clientName', value)}
+          onChangeText={value => handleChange('clientName', value)}
           placeholder="Client Name"
         />
         {error.clientName && (
@@ -143,7 +142,7 @@ const AddClientDetail = ({navigation,route}) => {
         <TextInput
           style={styles.input}
           value={formData.company}
-          onChangeText={(value) => handleChange('company', value)}
+          onChangeText={value => handleChange('company', value)}
           placeholder="Company"
         />
       </View>
@@ -153,7 +152,7 @@ const AddClientDetail = ({navigation,route}) => {
         <TextInput
           style={styles.input}
           value={formData.clientAddress}
-          onChangeText={(value) => handleChange('clientAddress', value)}
+          onChangeText={value => handleChange('clientAddress', value)}
           placeholder="Address Line 1"
         />
       </View>
@@ -163,7 +162,7 @@ const AddClientDetail = ({navigation,route}) => {
         <TextInput
           style={styles.input}
           value={formData.clientAddress1}
-          onChangeText={(value) => handleChange('clientAddress1', value)}
+          onChangeText={value => handleChange('clientAddress1', value)}
           placeholder="Address Line 2"
         />
       </View>
@@ -173,7 +172,7 @@ const AddClientDetail = ({navigation,route}) => {
         <TextInput
           style={styles.input}
           value={formData.clientAddress2}
-          onChangeText={(value) => handleChange('clientAddress2', value)}
+          onChangeText={value => handleChange('clientAddress2', value)}
           placeholder="Address Line 3"
         />
       </View>
@@ -183,7 +182,7 @@ const AddClientDetail = ({navigation,route}) => {
         <TextInput
           style={styles.input}
           value={formData.email}
-          onChangeText={(value) => handleChange('email', value)}
+          onChangeText={value => handleChange('email', value)}
           placeholder="Email"
           keyboardType="email-address"
         />
@@ -194,7 +193,7 @@ const AddClientDetail = ({navigation,route}) => {
         <TextInput
           style={styles.input}
           value={formData.mobileNo}
-          onChangeText={(value) => handleChange('mobileNo', value)}
+          onChangeText={value => handleChange('mobileNo', value)}
           placeholder="Mobile No"
           keyboardType="phone-pad"
         />
@@ -206,14 +205,13 @@ const AddClientDetail = ({navigation,route}) => {
           <TextInput
             style={styles.input}
             value={proj}
-            onChangeText={(value) => handleProjectChange(value, index)}
+            onChangeText={value => handleProjectChange(value, index)}
             placeholder={`Task ${index + 1}`}
           />
           {index !== 0 && (
             <TouchableOpacity
               style={styles.removeButton}
-              onPress={() => handleRemoveProject(index)}
-            >
+              onPress={() => handleRemoveProject(index)}>
               <Text style={styles.removeButtonText}>Remove</Text>
             </TouchableOpacity>
           )}
@@ -286,7 +284,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   addButton: {
-    width:'20%',
+    width: '20%',
     backgroundColor: '#28a745',
     padding: 12,
     borderRadius: 6,
@@ -298,7 +296,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   removeButton: {
-    width:'20%',
+    width: '20%',
     backgroundColor: '#dc3545',
     marginTop: 5,
     padding: 8,
