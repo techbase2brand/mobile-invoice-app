@@ -115,6 +115,7 @@ const AddBankDetail = ({navigation, route}) => {
       </View>
       <InputField
         label="Bank Name"
+        inputType='numeric'
         value={formData.bankName}
         onChange={val => handleChange('bankName', val)}
         error={error.bankName}
@@ -166,13 +167,14 @@ const AddBankDetail = ({navigation, route}) => {
   );
 };
 
-const InputField = ({label, value, onChange, error}) => (
+const InputField = ({label, value, onChange, error,inputType}) => (
   <View style={styles.inputWrapper}>
     <Text style={styles.label}>{label}</Text>
     <TextInput
       style={[styles.input, error && styles.errorInput]}
       placeholder={label}
       value={value}
+      keyboardType={inputType}
       onChangeText={onChange}
     />
     {error && <Text style={styles.errorText}>{error}</Text>}

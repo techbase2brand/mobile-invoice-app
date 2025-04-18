@@ -634,7 +634,7 @@ const CreateInvoice = ({navigation, route}) => {
   const handleAddDescription = project => {
     setProjectDescriptions(prevDescriptions => ({
       ...prevDescriptions,
-      [project]: [...(prevDescriptions[project] || []), ''],
+      [project]: [...(prevDescriptions?.[project] || []), ''],
     }));
   };
 
@@ -873,7 +873,7 @@ const CreateInvoice = ({navigation, route}) => {
 
                   {selectedProject?.includes(projectName) && (
                     <>
-                      {projectDescriptions[projectName] &&
+                      {projectDescriptions?.[projectName] &&
                         projectDescriptions[projectName]?.map(
                           (desc, descIndex) => (
                             <View key={descIndex} style={styles.inputGroup}>
@@ -990,10 +990,10 @@ const CreateInvoice = ({navigation, route}) => {
               <View style={{marginBottom: 16}}>
                 <Text
                   style={{fontSize: 14, fontWeight: '500', color: '#374151'}}>
-                  gst No
+                  GST NO.
                 </Text>
                 <TextInput
-                  placeholder="Gst No"
+                  placeholder="GST No"
                   value={gstNo}
                   onChangeText={text => setGstNo(text)}
                   style={styles.input}

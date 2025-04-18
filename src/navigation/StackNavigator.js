@@ -46,6 +46,9 @@ import AppointMentForm from '../screens/AppointMentForm';
 import ExperienceLetter from '../screens/ExperienceLetter';
 import ExperienceLetterForm from '../screens/ExperienceLetterForm';
 import ExperienceLetterPdf from '../screens/ExperienceLetterPdf';
+import Miscellaneous from '../screens/Miscellaneous';
+import MiscellaneousForm from '../screens/MiscellaneousForm';
+import LetterPdf from '../screens/LetterPdf';
 
 const Stack = createNativeStackNavigator();
 
@@ -95,6 +98,10 @@ export default function StackNavigator() {
           <Stack.Screen name="ExperienceLetter" component={ExperienceLetter} />
           <Stack.Screen name="ExperienceLetterForm" component={ExperienceLetterForm} />
           <Stack.Screen name="ExperienceLetterPdf" component={ExperienceLetterPdf} />
+          <Stack.Screen name="Miscellaneous" component={Miscellaneous} />
+          <Stack.Screen name="MiscellaneousForm" component={MiscellaneousForm} />
+          <Stack.Screen name="LetterPdf" component={LetterPdf} />
+
 
         </>
       ) : (

@@ -64,9 +64,12 @@ const EmployeesScreen = () => {
       'Content-Type': 'application/json',
     };
     try {
-      await axios.delete(`${REACT_APP_API_BASE_URL}/api/delete-emp/${selectedId}`, {
-        headers,
-      });
+      await axios.delete(
+        `${REACT_APP_API_BASE_URL}/api/delete-emp/${selectedId}`,
+        {
+          headers,
+        },
+      );
       setData(data?.filter(item => item._id !== selectedId));
       setDeleteModalVisible(false);
       setSelectedId(null);

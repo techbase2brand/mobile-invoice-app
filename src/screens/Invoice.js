@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Image,
   ScrollView,
@@ -16,8 +17,12 @@ import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import ViewShot from 'react-native-view-shot';
+import { PDFDocument } from 'pdf-lib';
 
 const Invoice = ({navigation, route}) => {
+  const viewRef = useRef();
+  console.log("ViewRefViewRef",viewRef);
   const [isDownloaded, setIsDownloaded] = useState(false);
   const [formData, setFormData] = useState({});
   console.log('formDataformDataformData>>>', isDownloaded);
@@ -213,280 +218,438 @@ const Invoice = ({navigation, route}) => {
   const createPDF = async () => {
     try {
       let PDFOptions = {
-        html:`<html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Invoice</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-            <style>
-                /* Base Styles */
+        html:`<!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>BASE2BRAND Invoice</title>
+                <link rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+                <style>
+           
                 body {
                     margin: 0;
-                    padding: 20px;
-                    font-family: Arial, sans-serif;
+                    padding: 0;
+                    background-color: white;
+                    color: #000000;
+                    font-size: 12px;
+                    line-height: 1.3;
                 }
-        
-                .invoice-container {
-                    max-width: 1000px;
-                    margin: 0 auto;
-                    background: white;
-                    position: relative;
+         
+        .invoice-wrapper {
+            width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 111;
+        }
+        .back_center_img {
+            width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 111;
+            opacity: 0.1;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .back_center_img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+         
+                .header {
+                    text-align: center;
+                    margin-bottom: 25px;
+                    padding-bottom: 5px;
                 }
-        
-                /* Header Section */
-                .header-image {
-                    width: 100%;
-                    height: 150px;
-                    object-fit: cover;
-                }
-        
-                .company-logo {
-                    position: absolute;
-                    top: 44px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    width: 180px;
-                    height: 60px;
-                    z-index: 1;
-                }
-        
-                /* Billing Info Section */
-                .billing-section {
-                    padding: 20px;
-                    margin-top: 20px;
-                }
-        
-                .header-row {
-                    display: flex;
-                    justify-content: space-between;
-                    border-bottom: 1px solid #000;
-                    padding-bottom: 8px;
-                    margin-bottom: 8px;
-                }
-        
-                .bill-head {
-                    font-size: 16px;
+         
+                .company-name {
+                    font-size: 24px;
                     font-weight: bold;
-                    color: #1E3A8A;
+                    margin: 0;
+                    color: #2a5ca8;
+                    letter-spacing: 0.5px;
                 }
-        
-                .body-row {
+         
+                .company-subname {
+                    font-size: 16px;
+                    margin: 3px 0 0;
+                    color: #2a5ca8;
+                    letter-spacing: 4px;
+                }
+         
+                .section-title {
+                    font-weight: bold;
+                    color: #2a5ca8;
+                    margin-bottom: 8px;
+                    padding: 10px 0;
+                    border-bottom: 1px solid #000000;
+                    font-size: 14px;
+                }
+         
+                .bill-to-container {
                     display: flex;
                     justify-content: space-between;
-                    gap: 20px;
-                    margin: 15px 0;
                 }
-        
-                /* Table Styles */
-                .invoice-table {
+         
+                .bill-to,
+                .invoice-info {
+                    width: 48%;
+                }
+         
+               
+                .info-label {
+                    display: inline-block;
+                    width: 75px;
+                    text-align: left;
+                    font-weight: bold;
+                }
+         
+                .items-table {
                     width: 100%;
                     border-collapse: collapse;
-                    margin: 20px 0;
+                    margin-bottom: 15px;
                 }
-        
-                .invoice-table th {
+         
+                .items-table th {
                     text-align: left;
-                    padding: 8px;
-                    border-bottom: 1px solid #000;
+                    padding: 10px 0px;
+                    font-size: 14px;
+                    margin-bottom: 8px;
+                    font-weight: bold;
+                    color: #2a5ca8;
+                    border-bottom: 1px solid #000000;
                 }
-        
-                .invoice-table td {
-                    padding: 8px;
+         
+                .items-table td {
+                    padding: 6px 8px;
                     vertical-align: top;
                 }
-        
-                /* Total Section */
-                .total-row {
+         
+                .amount-in-words {
+                    padding: 0;
+                    margin: 15px 0 10px;
+                    font-weight: 700;
+                    font-size: 14px;
+                }
+         
+                .footer-container {
                     display: flex;
                     justify-content: space-between;
-                    border-top: 1px solid #000;
-                    padding-top: 8px;
-                    margin-top: 20px;
+                    margin-top: 10px;
                 }
-        
-                /* Payment Details */
-                .payment-section {
-                    display: flex;
-                    justify-content: space-between;
-                    gap: 20px;
-                    margin: 20px 0;
+         
+                .bank-details,
+                .company-details {
+                    width: 48%;
                 }
-        
-                .payment-column {
-                    flex: 1;
+         
+                .footer-label {
+                    display: inline-block;
+                    width: 100px;
+                    font-weight: bold;
                 }
-        
-                /* Footer Styles */
-                .footer {
-                    position: relative;
-                    margin-top: 20px;
-                }
-        
-                .footer-banner {
-                    width: 100%;
-                    height: 200px;
-                    object-fit: cover;
-                }
-        
+         
+                .company-footer {
+            font-weight: bold;
+            margin-top: 15px;
+            color: #000000;
+            font-size: 12px;
+            padding: 0 0 0 104px;
+        }
+         
                 .contact-info {
-                    position: absolute;
-                    top: 50%;
-                    left: 40px;
-                    transform: translateY(-50%);
-                    color: white;
+                    margin-top: 20px;
+                    font-size: 11px;
+                    color: #555555;
                     display: flex;
-                    gap: 20px;
+                    align-items: center;
                 }
-        
+         
+                .contact-info .icon-name {
+            padding: 4px 0 0 3px;
+        }
+         
                 .contact-section {
                     display: flex;
-                    align-items: flex-start;
-                    gap: 12px;
-                    max-width: 300px;
+                    justify-content: space-between;
                 }
+         
+                td.dtfygu {
+                    border-bottom: 1px solid #000;
+                }
+         
+                td.value_class {
+                    border-top: 1px solid #000;
+                }
+                .contact-info .icon i.fa-solid.fa-phone {
+            font-size: 12px;
+            border: 2px solid #ffffff;
+            padding: 8px;
+            border-radius: 10px;
+            color: #ffffff;
+            margin: 0 0 0 10px;
+        }
+         
+        .contact-info .icon i.fa-solid.fa-location-dot {
+            font-size: 10px;
+            border: 2px solid #ffffff;
+            padding: 9px 11px;
+            border-radius: 10px;
+            color: #ffffff;
+            margin: 6px 0px 0 0;
+        }
+         
+                .contact-info .icon i.fa-solid.fa-globe {
+            font-size: 10px;
+            border: 2px solid #ffffff;
+            padding: 9px 9px;
+            border-radius: 10px;
+            color: #ffffff;
+            margin: 7px 0 0 0;
+        }
+        .icon-name p {
+            color: #ffffff;
+            font-size: 7px;
+            padding: 0 45px 0 7px;
+            text-wrap-mode: nowrap;
+        }
+         
+        .footer_img {
+            position: relative;
+        }
+        .footer_img img {
+            width: 100%;
+            height: 100%;
+        }
+        .mai_footer {
+            position: absolute;
+            bottom: 14px;
+            left: 0;
+            display: flex;
+            color: #000;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 0px;
+        }
+        .contact-info {
+            margin: 0px;
+            padding: 0px 20px;
+        }
+         
+        .invoice_img {
+            position: relative;
+        }
+        .invoice_img img {
+            width: 100%;
+        }
+        .header {
+            position: absolute;
+            top: 50%;
+            left: 47%;
+            width: fit-content;
+            height: 100%;
+            transform: translate(-50px, -50px);
+            align-items: center;
+            display: flex;
+            justify-content: space-around;
+            max-width: 157px;
+        }
+        .invoice-wrapper:after {
+            background-position: center;
+            background-size: contain;
+            height: 100%;
+            position: absolute;
+            content: "";
+            width: 100%;
+            top: 0;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        @media print {
+           
+        }
             </style>
-        </head>
-        <body>
-            <div class="invoice-container">
-                <!-- Header Images -->
-                <img src="../assests/header_invoice.png" class="header-image">
-                <img src="https://invoice-backend.base2brand.com${formData.companylogo}" class="company-logo">
-        
-                <!-- Billing Information -->
-                <div class="billing-section">
-                    <div class="header-row">
-                        <h2 class="bill-head">Bill To</h2>
-                        <h2 class="bill-head">Original For Recipient</h2>
-                    </div>
-        
-                    <div class="body-row">
-                        <!-- Client Information -->
-                        <div class="left-column">
-                            <p><strong>{${formData.client}}</strong></p>
-                            <p>{${formData.company}}</p>
-                            <p>{${formData.clientAddress}}</p>
-                            <p>{${formData.clientAddress1}}</p>
-                            <p>{${formData.clientAddress2}}</p>
-                            <p>{${formData.email}}</p>
-                            <p>{${formData.mobileNo}}</p>
-                        </div>
-        
-                        <!-- Invoice Details -->
-                        <div class="right-column">
-                            <div class="info-row">
-                                <span>Invoice No.</span>
-                                <span>{${formData.invoiceNo}}</span>
+            </head>
+            <body>
+                <div class="sdev_container">
+                    <div class="back_center_img"><img
+                            src="../Abhishek-porject/assets/image/logo-header.png"
+                            alt="back-logo"></div>
+                    <div class="invoice-wrapper img">
+                        <div class="invoice_wrap">
+                            <div class="invoice_img">
+                                <img
+                                    src="../Abhishek-porject/assets/image/header_image.png"
+                                    alt="hesder_img">
+                                <div class="header">
+                                    <img src="./assets/image/logo-header.png"
+                                        alt="logo">
+                                </div>
                             </div>
-                            <div class="info-row">
-                                <span>Invoice Date</span>
-                                <span>{${formData.selectDate}}</span>
-                            </div>
-                            {{#if formData.gstNo}}
-                            <div class="info-row">
-                                <span>GST Code</span>
-                                <span>{${formData.gstNo}}</span>
-                            </div>
-                            {{/if}}
+                            <!-- Header -->
                         </div>
-                    </div>
-        
-                    <!-- Items Table -->
-                    <table class="invoice-table">
-                        <thead>
-                            <tr>
-                                <th>Sr. No.</th>
-                                <th>Task</th>
-                                <th>Description</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {{#each data}}
-                            <tr>
-                                <td>{{@index}}</td>
-                                <td>{${this.task}}</td>
-                                <td>
-                                    {{#each this.description}}
-                                    <div>{${this}}</div>
-                                    {{/each}}
-                                </td>
-                                <td>
-                                    {{#each this.amounts}}
-                                    <div>{{this}}</div>
-                                    {{/each}}
-                                </td>
-                            </tr>
-                            {{/each}}
-                        </tbody>
-                    </table>
-        
-                    <!-- Total Section -->
-                    <div class="total-row">
-                        <h3>Total Value</h3>
-                        <h3>{{formData.currency}} {{totalAmount}}</h3>
-                    </div>
-                    <p>In Words: {{amountInWords}} Only /-</p>
-                </div>
-        
-                <!-- Payment Details -->
-                <div class="payment-section">
-                    <div class="payment-column">
-                        <h3>{{paymentMethodTitle}}</h3>
-                        {{#if formData.bankNamed}}
-                        <div class="payment-details">
-                            <p>Bank: {{formData.bankNamed}}</p>
-                            <p>Branch: {{formData.BranchName}}</p>
-                            <p>Account No.: {{formData.accNo}}</p>
-                            <!-- Add other bank details -->
+                        <!-- Bill To and Invoice Info -->
+                        <div class="secticton_table">
+                            <div class="bill-to-container">
+                                <div class="bill-to">
+                                    <div class="section-title">Bill To</div>
+                                    <p><strong>Fadi Algamal □</strong></p>
+                                    <p>FA Digital</p>
+                                    <p>Mohali</p>
+                                    <p>F-209, Industrial Area, Sector 74, Sahibzada Ajit
+                                        Singh
+                                        Phase 2</p>
+                                    <p>Hello@fadigital.com.au</p>
+                                    <p>+61481713666</p>
+                                </div>
+                                <div class="invoice-info">
+                                    <div class="section-title">Original For
+                                        Recipient</div>
+                                    <p>
+                                        <span class="info-label">Invoice No.</span>
+                                        B*a/2025-04-15/D135519
+                                    </p>
+                                    <p><span class="info-label">Invoice Date</span>
+                                        2025-04-15</p>
+                                    <p><span class="info-label">GST Code</span> 4234</p>
+                                </div>
+                            </div>
+                            <!-- Items Table -->
+                            <table class="items-table">
+                                <thead>
+                                    <tr>
+                                        <th class="back_logo">Sr. No.</th>
+                                        <th>Task</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>Website Development</td>
+                                        <td>Crud</td>
+                                        <td>10.25</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>hello</td>
+                                        <td>14</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Digital Marketing</td>
+                                        <td class="dtfygu">Design</td>
+                                        <td>50.11</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td><strong class="strong_value">Total
+                                                Value</strong></td>
+                                        <td></td>
+                                        <td class="value_class">AUD 74.36</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+         
+                            <!-- Amount in Words -->
+                            <div class="amount-in-words">In Words: AUD Seventy-four Only
+                                /-</div>
+                            <!-- Footer -->
+                            <div class="footer-container">
+                                <div class="bank-details">
+                                    <div class="section-title">Bank Detail</div>
+                                    <p><span class="footer-label">Bank</span> HDFC Bank
+                                        Limited</p>
+                                    <p><span class="footer-label">Branch</span> Phase 2,
+                                        Mohali</p>
+                                    <p><span class="footer-label">Account No.</span>
+                                        50200077879833</p>
+                                    <p>
+                                        <span class="footer-label">Account Name</span>
+                                        Base2Brand Infotech
+                                        Private Limited
+                                    </p>
+                                    <p><span class="footer-label">Account Type</span>
+                                        Current</p>
+                                    <p><span class="footer-label">IFSC</span>
+                                        HDFC0001834</p>
+                                    <p><span class="footer-label">Swift Code</span>
+                                        HDFCINBB</p>
+                                </div>
+                                <div class="company-details">
+                                    <div class="section-title">Company Detail</div>
+                                    <p><span class="footer-label">Trade Name</span>
+                                        BASE2BRAND</p>
+                                    <p><span class="footer-label">Ifsc Code</span>
+                                        GFTRE6567</p>
+                                    <p><span class="footer-label">GSTIN</span>
+                                        DER213</p>
+                                    <p><span class="footer-label">Address</span> Mohali
+                                        8b</p>
+                                    <div class="company-footer">BASE2BRAND</div>
+                                </div>
+                            </div>
+         
+                            <!-- Contact Info -->
                         </div>
-                        {{/if}}
-                    </div>
-        
-                    <div class="payment-column">
-                        <h3>Company Details</h3>
-                        <p>Trade Name: {{formData.trade}}</p>
-                        <p>GSTIN: {{formData.CompanygstNo}}</p>
-                        <p>Address: {{formData.companyAddress}}</p>
-                        {{#if formData.signature}}
-                        <img src="{{formData.signature}}" class="signature">
-                        {{/if}}
-                    </div>
-                </div>
-        
-                <!-- Footer -->
-                <div class="footer">
-                    <div class="contact-info">
                         <div class="contact-section">
-                            <i class="fas fa-phone"></i>
-                            <div>
-                                <p>+91 98720 84850</p>
-                                <p>+91 83601 16967</p>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-section">
-                            <i class="fas fa-globe"></i>
-                            <div>
-                                <p>www.base2brand.com</p>
-                                <a href="mailto:hello@base2brand.com">hello@base2brand.com</a>
-                            </div>
-                        </div>
-                        
-                        <div class="contact-section">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <div>
-                                <p>F-209, Phase 8B, Industrial Area, Sector 74,</p>
-                                <p>Sahibzada Ajit Singh Nagar, Punjab 160074</p>
+                            <div class="footer_img ">
+                                <img
+                                    src="../Abhishek-porject/assets/image/invoice_banner.png"
+                                    alt="footer_img">
+         
+                                <div class="mai_footer">
+                                    <div class="contact-info">
+         
+                                        <div class="icon"><i
+                                                class="fa-solid fa-phone"></i></div>
+                                        <div class="icon-name">
+                                            <p>www.base2brand.com</p>
+                                            <p>Telfo@base2brand.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="contact-info">
+                                        <div class="icon"><i
+                                                class="fa-solid fa-globe"></i></div>
+                                        <div class="icon-name">
+                                            <p>www.base2brand.com</p>
+                                            <p>Telfo@base2brand.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="contact-info">
+                                        <div class="icon"><i
+                                                class="fa-solid fa-location-dot"></i></div>
+                                        <div class="icon-name">
+                                            <p>
+                                                F-209, Phaser 88, Industrial Area,
+                                                Sector
+                                                74,
+                                                Sahibzada Ajit Singh
+                                                Nagu, Punjab 18007A
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <img src="../assests/invoice_banner.png" class="footer-banner">
-                </div>
-            </div>
-        </body>
-        </html>`,
-        fileName: 'file',
+                </body>
+         
+            </html>
+        Digital Marketing & Web & Mobile App Development Agency
+        Boost your business with our Digital Marketing, Web, and Mobile App Development services. Discover expert solutions tailored to your needs. Contact us!
+         `,
+        fileName: 'Ivoice',
         directory: Platform.OS == 'android' ? 'Downloads' : 'Documents',
       };
       let file = await RNHTMLtoPDF.convert(PDFOptions);
@@ -496,13 +659,79 @@ const Invoice = ({navigation, route}) => {
       console.log('Failed to generate pdf', error.message);
     }
   };
+  const createPDF1 = async () => {
+    try {
+      // 1. Capture the view as PNG image file
+      const uri = await viewRef.current.capture();
+      console.log("Captured URI:", uri);
+  
+      // 2. Fetch binary data from local file URI
+      const imageBuffer = await fetch(uri).then(res => res.arrayBuffer());
+  
+      // 3. Create a PDF
+      const pdfDoc = await PDFDocument.create();
+      const page = pdfDoc.addPage([595.28, 841.89]); // A4
+  
+      // 4. Embed image
+      const pngImage = await pdfDoc.embedPng(imageBuffer);
+      const pngDims = pngImage.scale(1);
+      const pageWidth = 595.28;
+      const pageHeight = 841.89;
+      
+      // Original image size
+      // Max image size with padding
+      const maxWidth = pageWidth - 60;  // 30 padding on each side
+      const maxHeight = pageHeight - 60;
+      
+      // Scale down proportionally if needed
+      let scale = Math.min(maxWidth / pngDims.width, maxHeight / pngDims.height);
+      const scaledWidth = pngDims.width * scale;
+      const scaledHeight = pngDims.height * scale;
+      
+      // Center the image
+      const x = (pageWidth - scaledWidth) / 2;
+      const y = (pageHeight - scaledHeight) / 2;
+      
+      page.drawImage(pngImage, {
+        x,
+        y,
+        width: scaledWidth,
+        height: scaledHeight,
+      });
+      // page.drawImage(pngImage, {
+      //   x: 30,
+      //   y: 841.89 - pngDims.height - 30,
+      //   width: pngDims.width,
+      //   height: pngDims.height,
+      // });
+  
+      // 5. Save and write PDF file
+      const base64Pdf = await pdfDoc.saveAsBase64({ dataUri: false });
+      const pdfPath = `${RNFS.DocumentDirectoryPath}/viewPDF.pdf`;
+      await RNFS.writeFile(pdfPath, base64Pdf, 'base64');
+  
+      console.log("PDF saved to:", pdfPath);
+  
+      // 6. Share
+      // await Share.open({
+      //   url: `file://${pdfPath}`,
+      //   type: 'application/pdf',
+      // });
+  
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      Alert.alert("PDF Error", error.message);
+    }
+  };
+  
   
   return (
     <View style={{marginTop: 40, paddingHorizontal: 16}}>
-      <TouchableOpacity style={styles.button} onPress={createPDF}>
+      <TouchableOpacity style={styles.button} onPress={createPDF1}>
         <Text style={styles.buttonText}>Pdf Download</Text>
       </TouchableOpacity>
-      <ScrollView style={[styles.invoice, {background: '#fff'}]}>
+      <ViewShot ref={viewRef} options={{ format: 'png', quality: 0.9 }}>
+      <ScrollView  style={[styles.invoice, {background: '#fff'}]}>
         <Image
           source={{
             uri: `https://invoice-backend.base2brand.com${formData.companylogo}`,
@@ -658,7 +887,7 @@ const Invoice = ({navigation, route}) => {
                     <Item label="PAN" value={formData.panNo} />
                   )}
                   <Item label="Address" value={formData.companyAddress} />
-                  {formData.signature && (
+                  {formData?.signature && (
                     <View style={styles.signatureBlock}>
                       <Image
                         source={{
@@ -669,7 +898,7 @@ const Invoice = ({navigation, route}) => {
                       />
                     </View>
                   )}
-                  <Item label="" value={formData.trade} />
+                  <Item label="" value={formData?.trade} />
                 </View>
               </View>
             </View>
@@ -744,6 +973,7 @@ const Invoice = ({navigation, route}) => {
           </View>
         </View>
       </ScrollView>
+      </ViewShot>
     </View>
   );
 };
@@ -776,12 +1006,14 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   logoInvoiceOverlap: {
-    width: 180,
-    height: 60,
+    width: 700,
+    height: 200,
     position: 'absolute',
-    top: '50%',
+    top: '40%',
     transform: 'translate(-50%, -50%)',
-    left: '50%',
+    left: '25%',
+    transform: [{ translateX: -90 }, { translateY: -30 }], 
+    opacity: 0.1,
   },
   headerInvoice: {
     width: '100%',
