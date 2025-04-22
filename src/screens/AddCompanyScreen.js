@@ -35,7 +35,7 @@ const AddCompanyScreen = ({navigation, route}) => {
   const [enableGST, setEnableGST] = useState(false);
   const [img, setImg] = useState(false);
   const id = route?.params?.companyId || {};
-
+console.log("logologologo",logo);
   useEffect(() => {
     if (id) {
       fetchCompanyDetail(id);
@@ -128,6 +128,7 @@ const AddCompanyScreen = ({navigation, route}) => {
     if (!formData.trade.trim()) {
       formErrors.trade = 'Please add trade name';
     }
+    console.log("response.statusresponse.status",logo,formData);
 
     if (Object.keys(formErrors).length > 0) {
       setError(formErrors);
@@ -217,8 +218,11 @@ const AddCompanyScreen = ({navigation, route}) => {
         <Text style={styles.uploadButtonText}>Upload Logo</Text>
       </TouchableOpacity>
 
-      {logo.companylogo && (
+      {/* {logo.companylogo && (
         <Image source={{uri: logo.companylogo}} style={styles.logoPreview} />
+      )} */}
+       {logo?.name && (
+       <Text>{logo?.companylogo}</Text>
       )}
 
       <Button title="Submit" onPress={handleSubmit} />

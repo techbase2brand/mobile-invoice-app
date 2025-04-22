@@ -174,7 +174,6 @@ const InputField = ({label, value, onChange, error,inputType}) => (
       style={[styles.input, error && styles.errorInput]}
       placeholder={label}
       value={value}
-      keyboardType={inputType}
       onChangeText={onChange}
     />
     {error && <Text style={styles.errorText}>{error}</Text>}

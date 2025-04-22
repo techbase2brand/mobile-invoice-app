@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { REACT_APP_API_BASE_URL } from '../constans/Constants';
+import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -124,9 +124,8 @@ const ProjectList = ({navigation}) => {
     fetchInvoices();
   }, []);
 
-
-  const handleDuplicate = async (duplicateId) => {
-    console.log("duplicateIdduplicateId",duplicateId);
+  const handleDuplicate = async duplicateId => {
+    console.log('duplicateIdduplicateId', duplicateId);
     const token = await AsyncStorage.getItem('token'); // Retrieve the token from localStorage
     const headers = {
       Authorization: `Bearer ${token}`, // Use the token from localStorage
@@ -153,7 +152,7 @@ const ProjectList = ({navigation}) => {
     }
   };
 
-  const fetchInvoices = async() => {
+  const fetchInvoices = async () => {
     const token = await AsyncStorage.getItem('token'); // Retrieve the token from localStorage
     const headers = {
       Authorization: `Bearer ${token}`, // Use the token from localStorage
@@ -260,7 +259,7 @@ const ProjectList = ({navigation}) => {
   };
   const handleSearch = () => {
     fetchInvoices();
-};
+  };
   const renderOptions = (type, options) => (
     <FlatList
       data={options}
@@ -275,7 +274,6 @@ const ProjectList = ({navigation}) => {
     />
   );
 
- 
   const handlePaymentStatusChange = e => {
     setPaymentStatus(e.target.value);
   };
@@ -351,7 +349,9 @@ const ProjectList = ({navigation}) => {
       {openItemId === item._id && (
         <View style={styles.actionMenu}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('CreateInvoice', {invoiceId: item._id})}
+            onPress={() =>
+              navigation.navigate('CreateInvoice', {invoiceId: item._id})
+            }
             style={styles.menuItem}>
             <Text>Edit</Text>
           </TouchableOpacity>
@@ -361,7 +361,9 @@ const ProjectList = ({navigation}) => {
             <Text>Delete</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Invoice', {invoiceId: item._id})}
+            onPress={() =>
+              navigation.navigate('Invoice', {invoiceId: item._id})
+            }
             style={styles.menuItem}>
             <Text>Download PDF</Text>
           </TouchableOpacity>
@@ -376,12 +378,11 @@ const ProjectList = ({navigation}) => {
   );
 
   return (
-
     <View style={{marginTop: 20}}>
-       <Header title="Invoices Details" navigation={navigation} />
-    <ScrollView style={styles.container}>
-      {/* Header Section */}
-      <TouchableOpacity
+      <Header title="Invoices Details" navigation={navigation} />
+      <ScrollView style={styles.container}>
+        {/* Header Section */}
+        <TouchableOpacity
           style={styles.addButton}
           onPress={() => navigation.navigate('CreateInvoice')}>
           <View style={styles.buttonContent}>
@@ -389,224 +390,236 @@ const ProjectList = ({navigation}) => {
             <Text style={styles.addButtonText}> Create Invoices</Text>
           </View>
         </TouchableOpacity>
-      <View style={styles.header}>
-        {/* Add your statistics rows here using Text components */}
+        <View style={styles.header}>
+          {/* Add your statistics rows here using Text components */}
 
-        <Text style={{fontWeight: 'bold'}}>Invoices: {invoices.length}</Text>
+          <Text style={{fontWeight: 'bold'}}>Invoices: {invoices.length}</Text>
 
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 14,
-            marginTop: 10,
-          }}>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>Paid:</Text> {paidInvoicesLength}
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>Unpaid:</Text>{' '}
-            {unpaidInvoicesLength}
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>Draft:</Text>{' '}
-            {draftInvoicesLength}
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>AUD:</Text> {totalAUD}
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>CAD:</Text> {totalCAD}
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>INR:</Text> {totalINR}
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>USD:</Text> {totalUSD}
-          </Text>
-        </View>
-
-        <View
-          style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 14,
-            marginTop: 10,
-          }}>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>Total Amount</Text>
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>AUD:</Text> {totalAUDCr}
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>CAD:</Text> {totalCADCr}
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>INR:</Text> {totalINRCr}
-          </Text>
-          <Text>
-            <Text style={{fontWeight: 'bold'}}>USD:</Text> {totalUSDCr}
-          </Text>
-        </View>
-      </View>
-
-      {/* Filters Section */}
-      <View style={styles.filterContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Search"
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-        />
-
-        <TouchableOpacity
-          style={styles.selector}
-          onPress={() => setModalVisible(true)}>
-          <Text style={styles.selectorText}>
-            {options.find(opt => opt.value === selectedDays)?.label ||
-              'Select date range'}
-          </Text>
-        </TouchableOpacity>
-
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}>
-          <TouchableOpacity
-            style={styles.modalOverlay}
-            activeOpacity={1}
-            onPressOut={() => setModalVisible(false)}>
-            <View style={styles.modalContent}>
-              <FlatList
-                data={options}
-                keyExtractor={item => item.value}
-                renderItem={({item}) => (
-                  <TouchableOpacity
-                    style={styles.option}
-                    onPress={() => handleSelectChange(item.value)}>
-                    <Text style={styles.optionText}>{item.label}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          </TouchableOpacity>
-        </Modal>
-
-        {/* Payment Status Selector */}
-        <TouchableOpacity
-          style={styles.selector}
-          onPress={() => setActiveModal('payment')}>
-          <Text style={styles.selectorText}>
-            {paymentOptions.find(opt => opt.value === paymentStatus)?.label ||
-              'Payment status'}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Duplicate Filter Selector */}
-        <TouchableOpacity
-          style={styles.selector}
-          onPress={() => setActiveModal('duplicate')}>
-          <Text style={styles.selectorText}>
-            {duplicateFilter === 'Duplicated' ? 'Duplicated' : 'Not Duplicated'}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Shared Modal */}
-        <Modal
-          transparent
-          animationType="fade"
-          visible={!!activeModal}
-          onRequestClose={() => setActiveModal(null)}>
-          <TouchableOpacity
-            style={styles.modalOverlay}
-            activeOpacity={1}
-            onPressOut={() => setActiveModal(null)}>
-            <View style={styles.modalContent}>
-              {activeModal === 'payment' &&
-                renderOptions('payment', paymentOptions)}
-              {activeModal === 'duplicate' &&
-                renderOptions('duplicate', duplicateOptions)}
-            </View>
-          </TouchableOpacity>
-        </Modal>
-        {/* Date Range Picker */}
-        <View style={styles.datePickerContainer}>
-          <TouchableOpacity
-            onPress={showStartDatePicker}
-            style={styles.dateButton}>
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 14,
+              marginTop: 10,
+            }}>
             <Text>
-              {startDate ? startDate.toLocaleDateString() : 'Select Start Date'}
+              <Text style={{fontWeight: 'bold'}}>Paid:</Text>{' '}
+              {paidInvoicesLength}
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>Unpaid:</Text>{' '}
+              {unpaidInvoicesLength}
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>Draft:</Text>{' '}
+              {draftInvoicesLength}
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>AUD:</Text> {totalAUD}
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>CAD:</Text> {totalCAD}
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>INR:</Text> {totalINR}
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>USD:</Text> {totalUSD}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 14,
+              marginTop: 10,
+            }}>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>Total Amount</Text>
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>AUD:</Text> {totalAUDCr}
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>CAD:</Text> {totalCADCr}
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>INR:</Text> {totalINRCr}
+            </Text>
+            <Text>
+              <Text style={{fontWeight: 'bold'}}>USD:</Text> {totalUSDCr}
+            </Text>
+          </View>
+        </View>
+
+        {/* Filters Section */}
+        <View style={styles.filterContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Search"
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+          />
+
+          <TouchableOpacity
+            style={styles.selector}
+            onPress={() => setModalVisible(true)}>
+            <Text style={styles.selectorText}>
+              {options.find(opt => opt.value === selectedDays)?.label ||
+                'Select date range'}
             </Text>
           </TouchableOpacity>
-          <Text> to </Text>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}>
+            <TouchableOpacity
+              style={styles.modalOverlay}
+              activeOpacity={1}
+              onPressOut={() => setModalVisible(false)}>
+              <View style={styles.modalContent}>
+                <FlatList
+                  data={options}
+                  keyExtractor={item => item.value}
+                  renderItem={({item}) => (
+                    <TouchableOpacity
+                      style={styles.option}
+                      onPress={() => handleSelectChange(item.value)}>
+                      <Text style={styles.optionText}>{item.label}</Text>
+                    </TouchableOpacity>
+                  )}
+                />
+              </View>
+            </TouchableOpacity>
+          </Modal>
+
+          {/* Payment Status Selector */}
           <TouchableOpacity
-            onPress={showEndDatePicker}
-            style={styles.dateButton}>
-            <Text>
-              {endDate ? endDate.toLocaleDateString() : 'Select End Date'}
+            style={styles.selector}
+            onPress={() => setActiveModal('payment')}>
+            <Text style={styles.selectorText}>
+              {paymentOptions.find(opt => opt.value === paymentStatus)?.label ||
+                'Payment status'}
             </Text>
           </TouchableOpacity>
+
+          {/* Duplicate Filter Selector */}
+          <TouchableOpacity
+            style={styles.selector}
+            onPress={() => setActiveModal('duplicate')}>
+            <Text style={styles.selectorText}>
+              {duplicateFilter === 'Duplicated'
+                ? 'Duplicated'
+                : 'Not Duplicated'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Shared Modal */}
+          <Modal
+            transparent
+            animationType="fade"
+            visible={!!activeModal}
+            onRequestClose={() => setActiveModal(null)}>
+            <TouchableOpacity
+              style={styles.modalOverlay}
+              activeOpacity={1}
+              onPressOut={() => setActiveModal(null)}>
+              <View style={styles.modalContent}>
+                {activeModal === 'payment' &&
+                  renderOptions('payment', paymentOptions)}
+                {activeModal === 'duplicate' &&
+                  renderOptions('duplicate', duplicateOptions)}
+              </View>
+            </TouchableOpacity>
+          </Modal>
+          {/* Date Range Picker */}
+          <View style={styles.datePickerContainer}>
+            <TouchableOpacity
+              onPress={showStartDatePicker}
+              style={styles.dateButton}>
+              <Text>
+                {startDate
+                  ? startDate.toLocaleDateString()
+                  : 'Select Start Date'}
+              </Text>
+            </TouchableOpacity>
+            <Text> to </Text>
+            <TouchableOpacity
+              onPress={showEndDatePicker}
+              style={styles.dateButton}>
+              <Text>
+                {endDate ? endDate.toLocaleDateString() : 'Select End Date'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <DateTimePickerModal
+            isVisible={isStartDatePickerVisible}
+            mode="date"
+            onConfirm={handleStartDateConfirm}
+            onCancel={hideStartDatePicker}
+          />
+
+          <DateTimePickerModal
+            isVisible={isEndDatePickerVisible}
+            mode="date"
+            onConfirm={handleEndDateConfirm}
+            onCancel={hideEndDatePicker}
+          />
+          <TouchableOpacity
+            onPress={handleSearch}
+            style={styles.button}
+            activeOpacity={0.8}>
+            <Text style={styles.buttonText}>Go</Text>
+          </TouchableOpacity>
+          {/* Add other filter components (selects) using TouchableOpacity + Modal */}
         </View>
 
-        <DateTimePickerModal
-          isVisible={isStartDatePickerVisible}
-          mode="date"
-          onConfirm={handleStartDateConfirm}
-          onCancel={hideStartDatePicker}
+        {/* Table Header */}
+        <View style={styles.headerRow}>
+          <Text
+            style={styles.headerCell}
+            onPress={() => handleSort('clientName')}>
+            Client Name{' '}
+            {sortColumn === 'clientName' && (sortOrder === 'asc' ? '↑' : '↓')}
+          </Text>
+
+          <Text style={styles.headerCell}>Company </Text>
+
+          <Text style={styles.headerCell}>Bank Name</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 40}]}>Acc. No</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 50}]}>Amount</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 80}]}>Date</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 80}]}>Action</Text>
+        </View>
+
+        {/* List of Items */}
+        <FlatList
+          data={sortedItems}
+          renderItem={renderItem}
+          keyExtractor={item => item._id}
         />
 
-        <DateTimePickerModal
-          isVisible={isEndDatePickerVisible}
-          mode="date"
-          onConfirm={handleEndDateConfirm}
-          onCancel={hideEndDatePicker}
-        />
-        <TouchableOpacity
-          onPress={handleSearch}
-          style={styles.button}
-          activeOpacity={0.8}>
-          <Text style={styles.buttonText}>Go</Text>
-        </TouchableOpacity>
-        {/* Add other filter components (selects) using TouchableOpacity + Modal */}
-      </View>
-
-      {/* Table Header */}
-      <View style={styles.headerRow}>
-        <Text
-          style={styles.headerCell}
-          onPress={() => handleSort('clientName')}>
-          Client Name{' '}
-          {sortColumn === 'clientName' && (sortOrder === 'asc' ? '↑' : '↓')}
-        </Text>
-        {/* Add other header cells similarly */}
-      </View>
-
-      {/* List of Items */}
-      <FlatList
-        data={sortedItems}
-        renderItem={renderItem}
-        keyExtractor={item => item._id}
-      />
-
-      {/* Pagination */}
-      <View style={styles.pagination}>
-        <TouchableOpacity
-          onPress={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}>
-          <Text>Previous</Text>
-        </TouchableOpacity>
-        <Text>
-          {currentPage} of {totalPages}
-        </Text>
-        <TouchableOpacity
-          onPress={() => paginate(currentPage + 1)}
-          disabled={currentPage === totalPages}>
-          <Text>Next</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        {/* Pagination */}
+        <View style={styles.pagination}>
+          <TouchableOpacity
+            onPress={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}>
+            <Text>Previous</Text>
+          </TouchableOpacity>
+          <Text>
+            {currentPage} of {totalPages}
+          </Text>
+          <TouchableOpacity
+            onPress={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}>
+            <Text>Next</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </View>
   );
 };

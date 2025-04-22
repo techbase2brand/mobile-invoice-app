@@ -489,7 +489,7 @@
 //   },
 // });
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -508,12 +508,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import numberToWords from 'number-to-words';
 import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import RNFS from 'react-native-fs';
+import ViewShot from 'react-native-view-shot';
+import { PDFDocument } from 'pdf-lib';
 
 const WagesPdf = ({navigation, route}) => {
+  const viewRef = useRef();
   const [formData, setFormData] = useState({});
   const [pdfUri, setPdfUri] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const id = route.params.wagesPdfId;
+  const id = route?.params?.wagesPdfId;
 
   const totalRateAmount =
     parseInt(formData.basic || '0') +
@@ -580,20 +584,85 @@ const WagesPdf = ({navigation, route}) => {
     return `${month}-${day}`;
   };
 
+  // const createPDF = async () => {
+  //   try {
+  //     let PDFOptions = {
+  //       html: '<h1>Generate PDF!</h1>',
+  //       fileName: 'file',
+  //       directory: Platform.OS == 'android' ? 'Downloads' : 'Documents',
+  //     };
+  //     let file = await RNHTMLtoPDF.convert(PDFOptions);
+  //     if (!file.filePath) return;
+  //     Alert.alert(file.filePath);
+  //   } catch (error) {
+  //     console.log('Failed to generate pdf', error.message);
+  //   }
+  // };
   const createPDF = async () => {
     try {
-      let PDFOptions = {
-        html: '<h1>Generate PDF!</h1>',
-        fileName: 'file',
-        directory: Platform.OS == 'android' ? 'Downloads' : 'Documents',
-      };
-      let file = await RNHTMLtoPDF.convert(PDFOptions);
-      if (!file.filePath) return;
-      Alert.alert(file.filePath);
+      // 1. Capture the view as PNG image file
+      const uri = await viewRef.current.capture();
+      console.log("Captured URI:", uri);
+  
+      // 2. Fetch binary data from local file URI
+      const imageBuffer = await fetch(uri).then(res => res.arrayBuffer());
+  
+      // 3. Create a PDF
+      const pdfDoc = await PDFDocument.create();
+      const page = pdfDoc.addPage([595.28, 841.89]); // A4
+  
+      // 4. Embed image
+      const pngImage = await pdfDoc.embedPng(imageBuffer);
+      const pngDims = pngImage.scale(1);
+      const pageWidth = 595.28;
+      const pageHeight = 841.89;
+      
+      // Original image size
+      // Max image size with padding
+      const maxWidth = pageWidth - 60;  // 30 padding on each side
+      const maxHeight = pageHeight - 60;
+      
+      // Scale down proportionally if needed
+      let scale = Math.min(maxWidth / pngDims.width, maxHeight / pngDims.height);
+      const scaledWidth = pngDims.width * scale;
+      const scaledHeight = pngDims.height * scale;
+      
+      // Center the image
+      const x = (pageWidth - scaledWidth) / 2;
+      const y = (pageHeight - scaledHeight) / 2;
+      
+      page.drawImage(pngImage, {
+        x,
+        y,
+        width: scaledWidth,
+        height: scaledHeight,
+      });
+      // page.drawImage(pngImage, {
+      //   x: 30,
+      //   y: 841.89 - pngDims.height - 30,
+      //   width: pngDims.width,
+      //   height: pngDims.height,
+      // });
+  
+      // 5. Save and write PDF file
+      const base64Pdf = await pdfDoc.saveAsBase64({ dataUri: false });
+      const pdfPath = `${RNFS.DocumentDirectoryPath}/Salary_slip.pdf`;
+      await RNFS.writeFile(pdfPath, base64Pdf, 'base64');
+  
+      console.log("PDF saved to:", pdfPath);
+      Alert.alert("PDF Saved Successfully", );
+      // 6. Share
+      // await Share.open({
+      //   url: `file://${pdfPath}`,
+      //   type: 'application/pdf',
+      // });
+  
     } catch (error) {
-      console.log('Failed to generate pdf', error.message);
+      console.error("Error generating PDF:", error);
+      Alert.alert("PDF Error", error.message);
     }
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -605,10 +674,17 @@ const WagesPdf = ({navigation, route}) => {
         onPress={createPDF}
         disabled={isGenerating}>
         <Text style={styles.generatePdfButtonText}>
-          {isGenerating ? 'Generating PDF...' : 'Generate PDF'}
+          {isGenerating ? 'Pdf Download' : 'Pdf Download'}
         </Text>
       </TouchableOpacity>
+      <ViewShot ref={viewRef} options={{ format: 'png', quality: 0.9 }}>
       <ScrollView style={styles.scrollView}>
+      <Image
+          source={{
+            uri: `https://invoice-backend.base2brand.com${formData.companylogo}`,
+          }}
+          style={styles.logoInvoiceOverlap}
+        />
         <View style={styles.header}>
           <Image
             source={{
@@ -617,9 +693,13 @@ const WagesPdf = ({navigation, route}) => {
             style={styles.companyLogo}
             resizeMode="contain"
           />
+          
+
           <Text style={styles.headerText}>Salary Slip</Text>
         </View>
+       
         <View style={styles.content}>
+       
           <View style={styles.salaryInfo}>
             <View style={styles.row}>
               <Text style={styles.label}>Salary Advice for The Month</Text>
@@ -804,6 +884,7 @@ const WagesPdf = ({navigation, route}) => {
           </View>
         </View>
       </ScrollView>
+      </ViewShot>
     </SafeAreaView>
   );
 };
@@ -814,7 +895,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   scrollView: {
-    flex: 1,
+    // flex: 1,
   },
   backArrow: {
     fontSize: 24,
@@ -876,7 +957,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   salaryInfo: {
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
     borderRadius: 10,
     padding: 15,
     marginBottom: 20,
@@ -965,6 +1046,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     fontStyle: 'italic',
+  },
+  logoInvoiceOverlap: {
+    width: 700,
+    height: 200,
+    position: 'absolute',
+    top: '40%',
+    transform: 'translate(-50%, -50%)',
+    left: '25%',
+    transform: [{ translateX: -90 }, { translateY: -30 }], 
+    opacity: 0.1,
   },
 });
 

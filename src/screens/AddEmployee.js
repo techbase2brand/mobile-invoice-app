@@ -30,7 +30,7 @@ const companies = ['KS NETWORKING SOLUTIONS', 'SAI LEGAL'];
 export default function AddEmployee() {
   const navigation = useNavigation();
   const route = useRoute();
-  const id = route?.params?.empId || {};
+  const id = route?.params?.empId
 
   const [formData, setFormData] = useState({
     empName: '',

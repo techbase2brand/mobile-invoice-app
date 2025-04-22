@@ -205,8 +205,13 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   pdfButton: {
-    color: 'green',
-    fontWeight: 'bold',
+    backgroundColor: 'green',
+    color: 'white',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 4,
+    overflow: 'hidden',
+    fontSize: 14,
   },
   addButton: {
     display: 'flex',

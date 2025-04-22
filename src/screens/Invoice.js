@@ -707,11 +707,11 @@ const Invoice = ({navigation, route}) => {
   
       // 5. Save and write PDF file
       const base64Pdf = await pdfDoc.saveAsBase64({ dataUri: false });
-      const pdfPath = `${RNFS.DocumentDirectoryPath}/viewPDF.pdf`;
+      const pdfPath = `${RNFS.DocumentDirectoryPath}/Invoice.pdf`;
       await RNFS.writeFile(pdfPath, base64Pdf, 'base64');
   
       console.log("PDF saved to:", pdfPath);
-  
+      Alert.alert("PDF Saved Successfully", );
       // 6. Share
       // await Share.open({
       //   url: `file://${pdfPath}`,
@@ -1026,10 +1026,10 @@ const styles = StyleSheet.create({
   },
   companyLogo: {
     position: 'absolute',
-    top: 44,
+    top: 40,
     left: '42%',
-    width: 180,
-    height: 60,
+    width: 200,
+    height: 120,
   },
 
   invoice_section_new: {

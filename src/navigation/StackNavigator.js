@@ -49,6 +49,7 @@ import ExperienceLetterPdf from '../screens/ExperienceLetterPdf';
 import Miscellaneous from '../screens/Miscellaneous';
 import MiscellaneousForm from '../screens/MiscellaneousForm';
 import LetterPdf from '../screens/LetterPdf';
+import AppointMentPdf from '../screens/AppointMentPdf';
 
 const Stack = createNativeStackNavigator();
 
@@ -94,6 +95,8 @@ export default function StackNavigator() {
           <Stack.Screen name="CreateInvoice" component={CreateInvoice} />
           <Stack.Screen name="Invoice" component={Invoice} />
           <Stack.Screen name="Appointment" component={Appointment} />
+          <Stack.Screen name="AppointMentPdf" component={AppointMentPdf} />
+
           <Stack.Screen name="AppointMentForm" component={AppointMentForm} />
           <Stack.Screen name="ExperienceLetter" component={ExperienceLetter} />
           <Stack.Screen name="ExperienceLetterForm" component={ExperienceLetterForm} />

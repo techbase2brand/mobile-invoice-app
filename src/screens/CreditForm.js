@@ -15,7 +15,7 @@ import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CreditForm = ({navigation, route}) => {
-  const id = route?.params?.CreditCardId || {};
+  const id = route?.params?.CreditCardId;
   const [formData, setFormData] = useState({
     accNo: '',
     bankName: '',

@@ -2,43 +2,40 @@ import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
-  Button,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Alert,
-  Platform,
   TouchableOpacity,
+  Modal,
+  ScrollView,
+  Image,
+  Alert,
+  StyleSheet,
 } from 'react-native';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // install this for local storage
-import axios from 'axios';
 import RenderHTML from 'react-native-render-html';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import RNFS from 'react-native-fs';
 import ViewShot from 'react-native-view-shot';
 import {PDFDocument} from 'pdf-lib';
-import {PermissionsAndroid} from 'react-native';
-import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 
-const ExperienceLetterPdf = ({navigation, route}) => {
+const AppointMentPdf = ({route}) => {
+  const id = route?.params?.appointmentId;
   const viewRef = useRef();
-
-  const id = route?.params?.experienceId;
   const [data, setData] = useState({});
-
-  console.log('dataaaaexperience ', data);
+  const [companyLogos, setCompanyLogos] = useState([]);
+  const [selectedLogo, setSelectedLogo] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  console.log('appiointmentdata', data);
   useEffect(() => {
     const fetchData = async () => {
-      const token = await AsyncStorage.getItem('token');
-
+      const token = await AsyncStorage.getItem('token'); // Retrieve the token from localStorage
       const headers = {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Use the token from localStorage
+        'Content-Type': 'application/json', // Add any other headers if needed
       };
-
       if (id) {
-        const apiUrl = `${REACT_APP_API_BASE_URL}/api/experience-get/${id}`;
+        const apiUrl = `${REACT_APP_API_BASE_URL}/api/appointment-get/${id}`;
         axios
           .get(apiUrl, {headers})
           .then(response => {
@@ -46,62 +43,13 @@ const ExperienceLetterPdf = ({navigation, route}) => {
             setData(invoiceData);
           })
           .catch(error => {
-            console.error('Error fetching experience data:', error);
+            console.error('Error fetching Wages details:', error);
           });
       }
     };
-
     fetchData();
   }, [id]);
 
-  const formatDate = dateString => {
-    const options = {day: 'numeric', month: 'long', year: 'numeric'};
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', options).format(date);
-  };
-
-  const generatePDF = async () => {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      );
-      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-        Alert.alert(
-          'Permission required',
-          'Storage permission is needed to save the PDF.',
-        );
-        return;
-      }
-    }
-
-    const htmlContent = `
-      <h1 style="text-align:center;color:#ef7e50;">Experience Letter</h1>
-      <p>Ref No: <strong>${data.refNo || ''}</strong></p>
-      <p>Date: <strong>${
-        data?.experienceDate ? formatDate(data.experienceDate) : ''
-      }</strong></p>
-      <div>${data.experienceData || ''}</div>
-      <br />
-      <div>
-        <p><strong>Phone:</strong> +91 8360116967, +91 9872084850</p>
-        <p><strong>Address:</strong> F-209, Phase 8B, Industrial Area, Sector 74, Sahibzada Ajit Singh Nagar, Punjab 160074</p>
-      </div>
-    `;
-
-    try {
-      const options = {
-        html: htmlContent,
-        fileName: 'experience_letter',
-        directory: 'Documents',
-      };
-
-      const file = await RNHTMLtoPDF.convert(options);
-      Alert.alert('Success', `PDF saved to: ${file.filePath}`);
-    } catch (err) {
-      console.error('PDF generation error:', err);
-      Alert.alert('Error', 'Something went wrong while generating the PDF.');
-    }
-  };
   const createPDF = async () => {
     try {
       // 1. Capture the view as PNG image file
@@ -144,47 +92,82 @@ const ExperienceLetterPdf = ({navigation, route}) => {
         width: scaledWidth,
         height: scaledHeight,
       });
+      // page.drawImage(pngImage, {
+      //   x: 30,
+      //   y: 841.89 - pngDims.height - 30,
+      //   width: pngDims.width,
+      //   height: pngDims.height,
+      // });
 
       // 5. Save and write PDF file
       const base64Pdf = await pdfDoc.saveAsBase64({dataUri: false});
-      const pdfPath = `${RNFS.DocumentDirectoryPath}/experience_letter.pdf`;
+      const pdfPath = `${RNFS.DocumentDirectoryPath}/appoint_letter.pdf`;
       await RNFS.writeFile(pdfPath, base64Pdf, 'base64');
+
       console.log('PDF saved to:', pdfPath);
       Alert.alert('PDF Saved Successfully');
+      // 6. Share
+      // await Share.open({
+      //   url: `file://${pdfPath}`,
+      //   type: 'application/pdf',
+      // });
     } catch (error) {
       console.error('Error generating PDF:', error);
       Alert.alert('PDF Error', error.message);
     }
   };
+  const formatDate = dateStr => {
+    if (!dateStr) return '';
+    const options = {day: 'numeric', month: 'long', year: 'numeric'};
+    return new Date(dateStr).toLocaleDateString('en-US', options);
+  };
+
   return (
-    <View style={styles.container}>
+    <View style={{padding: 20}}>
       <TouchableOpacity style={styles.button} onPress={createPDF}>
         <Text style={styles.buttonText}>Pdf Download</Text>
       </TouchableOpacity>
-      {/* <Button title="Download PDF" onPress={generatePDF} /> */}
+
+      {/* <TouchableOpacity
+        onPress={() => setModalVisible(true)}
+        style={{
+          backgroundColor: '#374151',
+          padding: 10,
+          borderRadius: 6,
+          marginBottom: 20,
+        }}>
+        <Text style={{color: 'white', textAlign: 'center'}}>
+          {selectedLogo ? 'Change Logo' : 'Select Company Logo'}
+        </Text>
+      </TouchableOpacity> */}
       <ViewShot ref={viewRef} options={{format: 'png', quality: 0.9}}>
         <ScrollView>
-          <Text style={styles.title}>Experience Letter</Text>
-          <Text>
-            Ref No: <Text style={styles.bold}>{data.refNo}</Text>
-          </Text>
-          <Text>
-            Date:{' '}
-            <Text style={styles.bold}>
-              {data.experienceDate ? formatDate(data.experienceDate) : ''}
-            </Text>
-          </Text>
-          {data?.companylogo && (
+          <View
+            style={{
+              marginBottom: 20,
+              border: 5,
+              borderBottomWidth: 2,
+              borderBottomColor: 'black',
+              paddingVertical: 20,
+            }}>
             <Image
-              source={{
-                uri: `https://invoice-backend.base2brand.com${data?.companylogo}`,
-              }}
-              style={styles.logo}
-              resizeMode="contain"
+              source={require('../assests/logo-b2b.png')}
+              style={{width: 200, height: 50, alignSelf: 'center'}}
             />
-          )}
-          <RenderHTML source={{html: data.experienceData}} />
-
+          </View>
+          <Image
+           source={require('../assests/b2b-icon.png')}
+          style={styles.logoInvoiceOverlap}
+        />
+          <Text style={{fontWeight: 'bold', marginBottom:10}}>Appointment Letter</Text>
+          <Text style={{fontWeight: 'bold'}}>Ref No: {data.refNo}</Text>
+          <Text style={{marginBottom: 10}}>
+            Date: {formatDate(data.letterHeadDate)}
+          </Text>
+          <RenderHTML
+            //   contentWidth={width}
+            source={{html: data?.appointMentData}}
+          />
           <View style={styles.mainFooter}>
             <View style={styles.footer}>
               <View style={styles.middle}>
@@ -251,46 +234,6 @@ const ExperienceLetterPdf = ({navigation, route}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    gap: 10,
-  },
-  button: {
-    marginVertical: 16,
-    backgroundColor: '#1D4ED8',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  title: {
-    fontSize: 24,
-    color: '#ef7e50',
-    fontWeight: 'bold',
-    marginVertical: 10,
-    marginTop: 40,
-  },
-  bold: {
-    fontWeight: '600',
-  },
-  logo: {
-    width: '100%',
-    height: 170,
-    marginVertical: 10,
-  },
-  experienceText: {
-    fontSize: 16,
-    marginVertical: 10,
-  },
-  contact: {
-    fontSize: 14,
-    marginVertical: 2,
-  },
   mainFooter: {
     padding: 16,
     backgroundColor: '#f4f4f4',
@@ -331,6 +274,29 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: 'contain',
   },
+  button: {
+    marginVertical: 16,
+    backgroundColor: '#1D4ED8',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  logoInvoiceOverlap: {
+    width: 680,
+    height: 540,
+    position: 'absolute',
+    top: '30%',
+    transform: 'translate(-50%, -50%)',
+    left: '25%',
+    transform: [{ translateX: -90 }, { translateY: -30 }], 
+    opacity: 0.1,
+  },
 });
 
-export default ExperienceLetterPdf;
+export default AppointMentPdf;

@@ -9,12 +9,14 @@ import {
   Modal,
   FlatList,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import axios from 'axios';
 import CheckBox from '@react-native-community/checkbox';
 import moment from 'moment';
+import Toast from 'react-native-toast-message';
 
 const CreateInvoice = ({navigation, route}) => {
   const currencies = ['AUD', 'USD', 'INR', 'CAD', 'GBP'];
@@ -429,8 +431,8 @@ const CreateInvoice = ({navigation, route}) => {
   const handleCompanyChange = event => {
     const selectedCompanyId = event.target.value;
     setTrade(selectedCompanyId);
-    const selectedCompany = company.find(
-      item => item._id === selectedCompanyId,
+    const selectedCompany = company?.find(
+      item => item?._id === selectedCompanyId,
     );
     if (selectedCompany) {
       setComGst(selectedCompany.gstNo);
@@ -442,42 +444,30 @@ const CreateInvoice = ({navigation, route}) => {
     }
   };
   const handleSubmit = async () => {
-    // if (!selectedClient) {
-    //   toast.error('Please select a client.', {
-    //     position: 'bottom-center',
-    //     autoClose: 2000,
-    //   });
-    //   return;
-    // }
+    if (!selectedClient) {
+      Alert.alert('Validation Error', 'Please select a client.');
+      return;
+    }
 
-    // if (!selectedProject) {
-    //   toast.error('Please select a project.', {
-    //     position: 'bottom-center',
-    //     autoClose: 2000,
-    //   });
-    //   return;
-    // }
-    // if (!selectedDate) {
-    //   toast.error('Please select a date.', {
-    //     position: 'bottom-center',
-    //     autoClose: 2000,
-    //   });
-    //   return;
-    // }
-    // if (!paymentMethod) {
-    //   toast.error('Please select a payment method.', {
-    //     position: 'bottom-center',
-    //     autoClose: 2000,
-    //   });
-    //   return;
-    // }
-    // if (!currency) {
-    //   toast.error('Please select currency.', {
-    //     position: 'bottom-center',
-    //     autoClose: 2000,
-    //   });
-    //   return;
-    // }
+    if (!selectedProject) {
+      Alert.alert('Validation Error', 'Please select a project.');
+      return;
+    }
+
+    if (!selectedDate) {
+      Alert.alert('Validation Error', 'Please select a date.');
+      return;
+    }
+
+    if (!paymentMethod) {
+      Alert.alert('Validation Error', 'Please select a payment method.');
+      return;
+    }
+
+    if (!currency) {
+      Alert.alert('Validation Error', 'Please select currency.');
+      return;
+    }
     const cleanedAmounts = {};
     Object.keys(amounts).forEach(key => {
       const isNonEmpty = Object.values(amounts[key]).some(

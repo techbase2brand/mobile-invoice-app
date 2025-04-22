@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Modal, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Toast from 'react-native-toast-message';
 
 const Header = ({title, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -46,11 +47,11 @@ const Header = ({title, navigation}) => {
       label: 'Credit Cards',
       action: () => navigation.navigate('CreditCard'),
     },
-    {
-      name: 'history',
-      label: 'Credit Card History',
-      action: () => navigation.navigate('CreditCardHistory'),
-    },
+    // {
+    //   name: 'history',
+    //   label: 'Credit Card History',
+    //   action: () => navigation.navigate('CreditCardHistory'),
+    // },
     {
       name: 'list-alt',
       label: 'Appointment Letter',
