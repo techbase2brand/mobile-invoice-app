@@ -584,16 +584,26 @@ const ProjectList = ({navigation}) => {
             style={styles.headerCell}
             onPress={() => handleSort('clientName')}>
             Client Name{' '}
-            {sortColumn === 'clientName' && (sortOrder === 'asc' ? '↑' : '↓')}
+            {sortColumn == 'clientName' && (sortOrder === 'asc' ? '↑' : '↓')}
           </Text>
 
-          <Text style={styles.headerCell}>Company </Text>
+          <Text style={[styles.headerCell]}>Company </Text>
+          <Text
+            style={[styles.headerCell,]}>
+            Status
+          </Text>
 
-          <Text style={styles.headerCell}>Bank Name</Text>
-          <Text style={[styles.headerCell, {paddingLeft: 40}]}>Acc. No</Text>
-          <Text style={[styles.headerCell, {paddingLeft: 50}]}>Amount</Text>
-          <Text style={[styles.headerCell, {paddingLeft: 80}]}>Date</Text>
-          <Text style={[styles.headerCell, {paddingLeft: 80}]}>Action</Text>
+          <Text style={[styles.headerCell]}>
+            Bank Name
+          </Text>
+          <Text
+            style={[styles.headerCell]}>
+            Acc. No
+          </Text>
+          <Text style={[styles.headerCell]}>Amount</Text>
+          <Text style={[styles.headerCell]}>Original</Text>
+          <Text style={[styles.headerCell]}>Date</Text>
+          <Text style={[styles.headerCell]}>Action</Text>
         </View>
 
         {/* List of Items */}
@@ -660,16 +670,29 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 4,
   },
+  // headerRow: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   // gap:30,
+  //   paddingVertical: 8,
+  //   borderBottomWidth: 1,
+  //   borderBottomColor: '#ccc',
+  // },
+  // headerCell: {
+  //   fontWeight: 'bold',
+  //   flex: 1,
+  // },
   headerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    backgroundColor: '#f2f2f2',
+    paddingVertical: 10,
+    justifyContent:"space-between"
   },
   headerCell: {
+    // flex: 1, // adjust width here
     fontWeight: 'bold',
-    flex: 1,
+    textAlign: 'center',
+    // paddingLeft:40
   },
   itemContainer: {
     borderBottomWidth: 1,
@@ -679,7 +702,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   cell: {
     flex: 1,
@@ -710,7 +733,6 @@ const styles = StyleSheet.create({
     padding: 4,
     borderRadius: 4,
   },
-
   selector: {
     borderWidth: 1,
     borderColor: '#ccc',

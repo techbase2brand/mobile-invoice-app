@@ -34,8 +34,9 @@ const AddCompanyScreen = ({navigation, route}) => {
   const [error, setError] = useState({});
   const [enableGST, setEnableGST] = useState(false);
   const [img, setImg] = useState(false);
-  const id = route?.params?.companyId || {};
-console.log("logologologo",logo);
+  const id = route?.params?.companyId;
+  console.log('logologologo', logo);
+  
   useEffect(() => {
     if (id) {
       fetchCompanyDetail(id);
@@ -43,9 +44,8 @@ console.log("logologologo",logo);
     }
   }, [id]);
 
-  const fetchCompanyDetail = async id => {
+  const fetchCompanyDetail = async (id) => {
     const token = await AsyncStorage.getItem('token');
-
     const headers = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
@@ -55,8 +55,7 @@ console.log("logologologo",logo);
         `${REACT_APP_API_BASE_URL}/api/get-company/${id}`,
         {headers},
       );
-      const bankDetailData = response.data.data;
-      console.log('bankDetailDatabankDetailData', bankDetailData);
+      const bankDetailData = response?.data?.data;
       setFormData(bankDetailData);
     } catch (error) {
       console.error('Error fetching bank detail:', error);
@@ -128,7 +127,7 @@ console.log("logologologo",logo);
     if (!formData.trade.trim()) {
       formErrors.trade = 'Please add trade name';
     }
-    console.log("response.statusresponse.status",logo,formData);
+    console.log('response.statusresponse.status', logo, formData);
 
     if (Object.keys(formErrors).length > 0) {
       setError(formErrors);
@@ -183,7 +182,6 @@ console.log("logologologo",logo);
         style={styles.input}
         onChangeText={value => handleChange('companyAddress', value)}
       />
-
       <Text style={styles.label}>IFSC</Text>
       <TextInput
         placeholder="IFSC Code"
@@ -221,9 +219,7 @@ console.log("logologologo",logo);
       {/* {logo.companylogo && (
         <Image source={{uri: logo.companylogo}} style={styles.logoPreview} />
       )} */}
-       {logo?.name && (
-       <Text>{logo?.companylogo}</Text>
-      )}
+      {logo?.name && <Text>{logo?.companylogo}</Text>}
 
       <Button title="Submit" onPress={handleSubmit} />
     </ScrollView>

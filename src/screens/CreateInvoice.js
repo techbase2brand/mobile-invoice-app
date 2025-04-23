@@ -86,6 +86,7 @@ const CreateInvoice = ({navigation, route}) => {
   const [company, setCompanyData] = useState([]);
   const [selectCompany, setSelectCompany] = useState('');
   const [amounts, setAmounts] = useState({});
+  const [bankName, setBankName] = useState();
 
   const [comGst, setComGst] = useState('');
   const [comIfsc, setComIfsc] = useState('');
@@ -97,9 +98,9 @@ const CreateInvoice = ({navigation, route}) => {
   const [companyLogos, setCompanyLogos] = useState([]);
   const [selectedLogo, setSelectedLogo] = useState('');
   const [signatures, setSignatures] = useState([]);
+  const [editId, setEditId] = useState(null);
   const signaturePayload = signatures.map(signature => signature.signature);
   const id = route?.params?.invoiceId;
-  console.log('companyLogoscompanyLogoscompanyLogos', id);
 
   const calculateTotalAmount = amounts => {
     let total = 0;
@@ -301,24 +302,32 @@ const CreateInvoice = ({navigation, route}) => {
     };
     fetchClient();
   }, []);
-
   useEffect(() => {
-    const token = AsyncStorage.getItem('token');
-    const headers = {
-      Authorization: `Bearer ${token}`, // Use the token from localStorage
-      'Content-Type': 'application/json', // Add any other headers if needed
-    };
-    const apiUrl = `${REACT_APP_API_BASE_URL}/api/bank-data`;
-    axios
-      .get(apiUrl, {headers})
-      .then(response => {
-        console.log('res', response);
+    if (route?.params?.invoiceId) {
+      setEditId(route?.params?.invoiceId);
+      console.log('Setting editId:', route.params.id);
+    }
+  }, [route?.params]);
+  useEffect(() => {
+    const fetchDataBank = async () => {
+      const token = await AsyncStorage.getItem('token');
+      const headers = {
+        Authorization: `Bearer ${token}`, // Use the token from localStorage
+        'Content-Type': 'application/json', // Add any other headers if needed
+      };
+      const apiUrl = `${REACT_APP_API_BASE_URL}/api/bank-data`;
+      axios
+        .get(apiUrl, {headers})
+        .then(response => {
+          console.log('res', response);
 
-        setData(response.data.data);
-      })
-      .catch(error => {
-        console.error('Error fetching invoices:', error);
-      });
+          setData(response.data.data);
+        })
+        .catch(error => {
+          console.error('Error fetching invoices:', error);
+        });
+    };
+    fetchDataBank();
   }, []);
 
   const handleClientChange = event => {
@@ -374,7 +383,6 @@ const CreateInvoice = ({navigation, route}) => {
   // };
 
   const handleProjectChange = (value, checked) => {
-    console.log('valuevalue', value, checked);
     if (checked) {
       setSelectedProject(prevProjects => [...prevProjects, value]);
     } else {
@@ -401,7 +409,8 @@ const CreateInvoice = ({navigation, route}) => {
   };
 
   const handleBankChange = event => {
-    if (!event.target.value) {
+    console.log("eventevent",event);
+    if (!event) {
       setAccNo('');
       setAccType('');
       setBranch('');
@@ -411,13 +420,14 @@ const CreateInvoice = ({navigation, route}) => {
       setTradeName('');
       setAmount('');
     }
-    const selectedBankId = event.target.value;
+    const selectedBankId = event;
     setSelectBank(selectedBankId);
     setSelectBankModal(false);
     setBank(selectedBankId);
     const selectedBank = data.find(bank => bank._id === selectedBankId);
 
     if (selectedBank) {
+      setBankName(selectedBank.bankName)
       setAccNo(selectedBank.accNo);
       setAccType(selectedBank.accType);
       setBranch(selectedBank.BranchName);
@@ -443,6 +453,158 @@ const CreateInvoice = ({navigation, route}) => {
       setLogo(selectedCompany.companylogo);
     }
   };
+  // const handleSubmit = async () => {
+  //   const token = await AsyncStorage.getItem('token'); // Retrieve the token from localStorage
+  //   const headers = {
+  //     Authorization: `Bearer ${token}`, // Use the token from localStorage
+  //     'Content-Type': 'application/json', // Add any other headers if needed
+  //   };
+  //   if (!selectedClient) {
+  //     Alert.alert('Validation Error', 'Please select a client.');
+  //     return;
+  //   }
+
+  //   if (!selectedProject) {
+  //     Alert.alert('Validation Error', 'Please select a project.');
+  //     return;
+  //   }
+
+  //   if (!selectedDate) {
+  //     Alert.alert('Validation Error', 'Please select a date.');
+  //     return;
+  //   }
+
+  //   if (!paymentMethod) {
+  //     Alert.alert('Validation Error', 'Please select a payment method.');
+  //     return;
+  //   }
+
+  //   if (!currency) {
+  //     Alert.alert('Validation Error', 'Please select currency.');
+  //     return;
+  //   }
+  //   console.log('editId1111', editId);
+
+  //   const cleanedAmounts = {};
+  //   Object.keys(amounts)?.forEach(key => {
+  //     const isNonEmpty = Object.values(amounts[key])?.some(
+  //       value => value?.trim() !== '',
+  //     );
+  //     if (isNonEmpty) {
+  //       cleanedAmounts[key] = amounts?.[key];
+  //     }
+  //   });
+  //   console.log('cleanedAmounts>>', cleanedAmounts);
+
+  //   const cleanedProjectDescriptions = {};
+  //   Object.keys(projectDescriptions)?.forEach(key => {
+  //     const descriptions = projectDescriptions[key];
+  //     if (descriptions?.some(desc => desc?.trim() !== '')) {
+  //       cleanedProjectDescriptions[key] = descriptions;
+  //     }
+  //   });
+
+  //   console.log('cleanedProjectDescriptions>>', cleanedProjectDescriptions);
+  //   const selectedClientName =
+  //     client?.find(item => item?._id === selectedClient)?.clientName || '';
+  //   console.log('selectedClientName>>', selectedClientName);
+
+  //   const selectedBankName =
+  //     data?.find(item => item._id === selectBank)?.bankName || '';
+  //   console.log('selectedBankName>>', selectedBankName);
+
+  //   const selectedTradeName =
+  //     company?.find(item => item._id === trade)?.trade || '';
+  //   console.log('selectedTradeName>>', selectedTradeName);
+
+  //   const formattedDate = moment(selectedDate)?.format('YYYY-MM-DD');
+  //   console.log('formattedDate>>', formattedDate);
+
+  //   const formData = {
+  //     clientName: state,
+  //     company: companyName,
+  //     email: email,
+  //     mobileNo: mobileNo,
+  //     clientAddress: clientAddress,
+  //     clientAddress1: clientAddress1,
+  //     clientAddress2: clientAddress2,
+  //     project: selectedProject,
+  //     bankName: bank,
+  //     accNo: accNo,
+  //     accType: accType,
+  //     tradeName: tradeName,
+  //     BranchName: branch,
+  //     ifscCode: ifsc,
+  //     swiftCode: swift,
+  //     accName: accName,
+  //     paytmName: paytmName,
+  //     PaytmId: PaytmId,
+  //     payPalName: payPalName,
+  //     payPalId: payPalId,
+  //     wise: wise,
+  //     wiseId: wiseId,
+  //     payOneer: payOneer,
+  //     payoneerId: payoneerId,
+  //     gstNo: gstNo,
+  //     gstin: gstin,
+  //     amount: amount,
+  //     selectDate: formattedDate,
+  //     currency: currency,
+  //     description: cleanedProjectDescriptions,
+  //     trade: selectedTradeName,
+  //     ifsc: comIfsc,
+  //     companyAddress: companyAddress,
+  //     panNo: comPanNo,
+  //     CompanygstNo: comGst,
+  //     signature: signaturePayload[0],
+  //     paymentStatus: payStatus || 'draft',
+  //     payMethod: paymentMethod,
+  //     enableGST: enableGST,
+  //     client: selectedClientName,
+  //     tradde: trade,
+  //     bankNamed: selectedBankName,
+  //     AdvanceAmount: totalAmount,
+  //     amounts: cleanedAmounts,
+  //     companylogo: selectedLogo,
+  //     sgst: sgst,
+  //     cgst: cgst,
+  //     sgstper: sgstper,
+  //     cgstper: cgstper,
+  //   };
+  //   console.log('editId222', formData);
+
+  //   if (editId !== undefined && editId !== null && editId !== '') {
+  //     console.log('editId333', editId);
+
+  //     axios
+  //       .put(
+  //         `${REACT_APP_API_BASE_URL}/api/update-invoice/${editId}`,
+  //         formData,
+  //         {
+  //           headers,
+  //         },
+  //       )
+  //       .then(response => {
+  //         console.log('responseresponse', response);
+  //         navigation.navigate('InvoicesDetails');
+  //       })
+  //       .catch(error => {
+  //         console.error('Error updating form data:', error);
+  //       });
+  //   } else {
+  //     axios
+  //       .post(`${REACT_APP_API_BASE_URL}/api/add-clientBank`, formData, {
+  //         headers,
+  //       })
+  //       .then(response => {
+  //         navigation.navigate('InvoicesDetails');
+  //       })
+  //       .catch(error => {
+  //         console.error('Error submitting form data:', error);
+  //       });
+  //   }
+  // };
+
   const handleSubmit = async () => {
     if (!selectedClient) {
       Alert.alert('Validation Error', 'Please select a client.');
@@ -468,23 +630,21 @@ const CreateInvoice = ({navigation, route}) => {
       Alert.alert('Validation Error', 'Please select currency.');
       return;
     }
-    const cleanedAmounts = {};
-    Object.keys(amounts).forEach(key => {
-      const isNonEmpty = Object.values(amounts[key]).some(
-        value => value.trim() !== '',
-      );
-      if (isNonEmpty) {
-        cleanedAmounts[key] = amounts[key];
-      }
-    });
+    // const cleanedAmounts = {};
+    // Object.keys(amounts)?.forEach((key) => {
+    //     const isNonEmpty = Object.values(amounts[key]).some(value => value.trim() !== '');
+    //     if (isNonEmpty) {
+    //         cleanedAmounts[key] = amounts[key];
+    //     }
+    // });
 
-    const cleanedProjectDescriptions = {};
-    Object.keys(projectDescriptions).forEach(key => {
-      const descriptions = projectDescriptions[key];
-      if (descriptions.some(desc => desc.trim() !== '')) {
-        cleanedProjectDescriptions[key] = descriptions;
-      }
-    });
+    // const cleanedProjectDescriptions = {};
+    // Object.keys(projectDescriptions)?.forEach((key) => {
+    //     const descriptions = projectDescriptions[key];
+    //     if (descriptions.some(desc => desc.trim() !== '')) {
+    //         cleanedProjectDescriptions[key] = descriptions;
+    //     }
+    // });
     const selectedClientName =
       client.find(item => item._id === selectedClient)?.clientName || '';
     const selectedBankName =
@@ -522,7 +682,7 @@ const CreateInvoice = ({navigation, route}) => {
       amount: amount,
       selectDate: formattedDate,
       currency: currency,
-      description: cleanedProjectDescriptions,
+      // description: cleanedProjectDescriptions,
       trade: selectedTradeName,
       ifsc: comIfsc,
       companyAddress: companyAddress,
@@ -536,14 +696,14 @@ const CreateInvoice = ({navigation, route}) => {
       tradde: trade,
       bankNamed: selectedBankName,
       AdvanceAmount: totalAmount,
-      amounts: cleanedAmounts,
+      // amounts: cleanedAmounts,
       companylogo: selectedLogo,
       sgst: sgst,
       cgst: cgst,
       sgstper: sgstper,
       cgstper: cgstper,
     };
-
+    console.log('formdataaa', formData);
     const token = await AsyncStorage.getItem('token'); // Retrieve the token from localStorage
     const headers = {
       Authorization: `Bearer ${token}`, // Use the token from localStorage
@@ -573,7 +733,6 @@ const CreateInvoice = ({navigation, route}) => {
         });
     }
   };
-
   const handlePaymentMethodChange = event => {
     console.log('eventevent', event);
     const newPaymentMethod = event;
@@ -1120,12 +1279,12 @@ const CreateInvoice = ({navigation, route}) => {
             <TouchableOpacity
               style={styles.selector}
               onPress={() => setSelectBankModal(true)}>
-              <Text>{selectBank || 'Select Bank'}</Text>
+              <Text>{bankName || 'Select Bank'}</Text>
             </TouchableOpacity>
 
             <Modal visible={selectBankModal} transparent animationType="slide">
               <View style={styles.modalWrapper}>
-                {data.map(item => (
+                {data?.map(item => (
                   <TouchableOpacity
                     key={item._id}
                     style={styles.modalOption}

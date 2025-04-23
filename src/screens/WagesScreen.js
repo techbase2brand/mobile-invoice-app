@@ -247,7 +247,7 @@ const WagesScreen = ({navigation}) => {
           transparent={true}
           animationType="slide">
           <View style={styles.modalView}>
-            {['7', '30', '90', '180', '365'].map(days => (
+            {['7', '30', '90', '180', '365']?.map(days => (
               <TouchableOpacity
                 key={days}
                 onPress={() => {
@@ -298,16 +298,22 @@ const WagesScreen = ({navigation}) => {
         data={currentItems}
         keyExtractor={item => item._id}
         renderItem={renderItem}
-        // ListHeaderComponent={TableHeader}
+        ListEmptyComponent={
+          <Text style={{ textAlign: 'center', marginTop: 20, color: 'gray' }}>
+            Data not found
+          </Text>
+        }
       />
 
-      <View style={styles.pagination}>
+  {  currentItems.length !==0 && <View style={styles.pagination}>
         {[...Array(totalPages)].map((_, index) => (
           <TouchableOpacity key={index} onPress={() => paginate(index + 1)}>
             <Text style={styles.pageButton}>{index + 1}</Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </View>}
+
+
     </View>
   );
 };

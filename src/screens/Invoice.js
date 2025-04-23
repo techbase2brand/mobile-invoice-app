@@ -18,11 +18,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import ViewShot from 'react-native-view-shot';
-import { PDFDocument } from 'pdf-lib';
+import {PDFDocument} from 'pdf-lib';
 
 const Invoice = ({navigation, route}) => {
   const viewRef = useRef();
-  console.log("ViewRefViewRef",viewRef);
+  console.log('ViewRefViewRef', viewRef);
   const [isDownloaded, setIsDownloaded] = useState(false);
   const [formData, setFormData] = useState({});
   console.log('formDataformDataformData>>>', isDownloaded);
@@ -214,11 +214,10 @@ const Invoice = ({navigation, route}) => {
     }),
   );
 
-
   const createPDF = async () => {
     try {
       let PDFOptions = {
-        html:`<!DOCTYPE html>
+        html: `<!DOCTYPE html>
         <html lang="en">
             <head>
                 <meta charset="UTF-8" />
@@ -663,35 +662,38 @@ const Invoice = ({navigation, route}) => {
     try {
       // 1. Capture the view as PNG image file
       const uri = await viewRef.current.capture();
-      console.log("Captured URI:", uri);
-  
+      console.log('Captured URI:', uri);
+
       // 2. Fetch binary data from local file URI
       const imageBuffer = await fetch(uri).then(res => res.arrayBuffer());
-  
+
       // 3. Create a PDF
       const pdfDoc = await PDFDocument.create();
       const page = pdfDoc.addPage([595.28, 841.89]); // A4
-  
+
       // 4. Embed image
       const pngImage = await pdfDoc.embedPng(imageBuffer);
       const pngDims = pngImage.scale(1);
       const pageWidth = 595.28;
       const pageHeight = 841.89;
-      
+
       // Original image size
       // Max image size with padding
-      const maxWidth = pageWidth - 60;  // 30 padding on each side
+      const maxWidth = pageWidth - 60; // 30 padding on each side
       const maxHeight = pageHeight - 60;
-      
+
       // Scale down proportionally if needed
-      let scale = Math.min(maxWidth / pngDims.width, maxHeight / pngDims.height);
+      let scale = Math.min(
+        maxWidth / pngDims.width,
+        maxHeight / pngDims.height,
+      );
       const scaledWidth = pngDims.width * scale;
       const scaledHeight = pngDims.height * scale;
-      
+
       // Center the image
       const x = (pageWidth - scaledWidth) / 2;
       const y = (pageHeight - scaledHeight) / 2;
-      
+
       page.drawImage(pngImage, {
         x,
         y,
@@ -704,275 +706,283 @@ const Invoice = ({navigation, route}) => {
       //   width: pngDims.width,
       //   height: pngDims.height,
       // });
-  
+
       // 5. Save and write PDF file
-      const base64Pdf = await pdfDoc.saveAsBase64({ dataUri: false });
+      const base64Pdf = await pdfDoc.saveAsBase64({dataUri: false});
       const pdfPath = `${RNFS.DocumentDirectoryPath}/Invoice.pdf`;
       await RNFS.writeFile(pdfPath, base64Pdf, 'base64');
-  
-      console.log("PDF saved to:", pdfPath);
-      Alert.alert("PDF Saved Successfully", );
-      // 6. Share
-      // await Share.open({
-      //   url: `file://${pdfPath}`,
-      //   type: 'application/pdf',
-      // });
-  
+      console.log('PDF saved to:', pdfPath);
+      Alert.alert('PDF Saved Successfully');
     } catch (error) {
-      console.error("Error generating PDF:", error);
-      Alert.alert("PDF Error", error.message);
+      console.error('Error generating PDF:', error);
+      Alert.alert('PDF Error', error.message);
     }
   };
-  
-  
+
   return (
     <View style={{marginTop: 40, paddingHorizontal: 16}}>
       <TouchableOpacity style={styles.button} onPress={createPDF1}>
         <Text style={styles.buttonText}>Pdf Download</Text>
       </TouchableOpacity>
-      <ViewShot ref={viewRef} options={{ format: 'png', quality: 0.9 }}>
-      <ScrollView  style={[styles.invoice, {background: '#fff'}]}>
-        <Image
-          source={{
-            uri: `https://invoice-backend.base2brand.com${formData.companylogo}`,
-          }}
-          style={styles.logoInvoiceOverlap}
-        />
+      <ViewShot ref={viewRef} options={{format: 'png', quality: 0.9}}>
+        <ScrollView style={[styles.invoice, {background: '#fff'}]}>
+          <Image
+            source={{
+              uri: `https://invoice-backend.base2brand.com${formData.companylogo}`,
+            }}
+            style={styles.logoInvoiceOverlap}
+          />
 
-        <Image
-          source={require('../assests/header_invoice.png')} // Make sure the image is in your assets folder
-          style={styles.headerInvoice}
-          resizeMode="cover"
-        />
+          <Image
+            source={require('../assests/header_invoice.png')} // Make sure the image is in your assets folder
+            style={styles.headerInvoice}
+            resizeMode="cover"
+          />
 
-        <Image
-          source={{
-            uri: `https://invoice-backend.base2brand.com${formData.companylogo}`,
-          }}
-          style={styles.companyLogo}
-          resizeMode="contain"
-        />
+          <Image
+            source={{
+              uri: `https://invoice-backend.base2brand.com${formData.companylogo}`,
+            }}
+            style={styles.companyLogo}
+            resizeMode="contain"
+          />
 
-        <View style={[styles.invoice_section_new, {background: '#fff'}]}>
-          <View>
-            {/* Header Titles */}
-            <View style={styles.headerRow}>
-              <Text style={styles.billHead}>Bill To</Text>
-              <Text style={styles.billHead}>Original For Recipient</Text>
-            </View>
-
-            {/* Content Row */}
-            <View style={styles.bodyRow}>
-              {/* Left Column */}
-              <View style={styles.leftColumn}>
-                <Text style={styles.boldText}>
-                  {formData.client}{' '}
-                  {/* <CheckBox value={false} disabled style={styles.checkbox} /> */}
-                </Text>
-                <Text style={{marginVertical: 5}}>{formData.company}</Text>
-                <Text>{formData.clientAddress}</Text>
-                <Text style={{marginVertical: 5}}>
-                  {formData.clientAddress1}
-                </Text>
-                <Text>{formData.clientAddress2}</Text>
-                <Text style={{marginVertical: 5}}>{formData.email}</Text>
-                <Text style={{marginBottom: 5}}>{formData.mobileNo}</Text>
+          <View style={[styles.invoice_section_new, {background: '#fff'}]}>
+            <View>
+              {/* Header Titles */}
+              <View style={styles.headerRow}>
+                <Text style={styles.billHead}>Bill To</Text>
+                <Text style={styles.billHead}>Original For Recipient</Text>
               </View>
 
-              {/* Right Column */}
-              <View style={styles.rightColumn}>
-                <View style={styles.infoRow}>
-                  <Text style={styles.label}>Invoice No.</Text>
-                  <Text style={styles.value}>{formData.invoiceNo}</Text>
-                </View>
-                <View style={styles.infoRow}>
-                  <Text style={styles.label}>Invoice Date</Text>
-                  <Text style={styles.value}>
-                    {formData.selectDate
-                      ? formData.selectDate.split('T')[0]
-                      : 'N/A'}
+              {/* Content Row */}
+              <View style={styles.bodyRow}>
+                {/* Left Column */}
+                <View style={styles.leftColumn}>
+                  <Text style={styles.boldText}>
+                    {formData.client}{' '}
+                    {/* <CheckBox value={false} disabled style={styles.checkbox} /> */}
                   </Text>
+                  <Text style={{marginVertical: 5}}>{formData.company}</Text>
+                  <Text>{formData.clientAddress}</Text>
+                  <Text style={{marginVertical: 5}}>
+                    {formData.clientAddress1}
+                  </Text>
+                  <Text>{formData.clientAddress2}</Text>
+                  <Text style={{marginVertical: 5}}>{formData.email}</Text>
+                  <Text style={{marginBottom: 5}}>{formData.mobileNo}</Text>
                 </View>
-                {formData.gstNo && (
+
+                {/* Right Column */}
+                <View style={styles.rightColumn}>
                   <View style={styles.infoRow}>
-                    <Text style={styles.label}>GST Code</Text>
-                    <Text style={styles.value}>{formData.gstNo}</Text>
+                    <Text style={styles.label}>Invoice No.</Text>
+                    <Text style={styles.value}>{formData.invoiceNo}</Text>
                   </View>
-                )}
+                  <View style={styles.infoRow}>
+                    <Text style={styles.label}>Invoice Date</Text>
+                    <Text style={styles.value}>
+                      {formData.selectDate
+                        ? formData.selectDate.split('T')[0]
+                        : 'N/A'}
+                    </Text>
+                  </View>
+                  {formData.gstNo && (
+                    <View style={styles.infoRow}>
+                      <Text style={styles.label}>GST Code</Text>
+                      <Text style={styles.value}>{formData.gstNo}</Text>
+                    </View>
+                  )}
+                </View>
               </View>
             </View>
-          </View>
-          <View>
-            <View style={styles.header}>
-              <Text style={[styles.bold, {width: '30%'}]}>Sr. No.</Text>
-              <Text style={[styles.bold, styles.taskHeader]}>Task</Text>
-              <Text style={[styles.bold, styles.descHeader]}>Description</Text>
-              <Text style={styles.bold}>Amount</Text>
-            </View>
+            <View>
+              <View style={styles.header}>
+                <Text style={[styles.bold, {width: '30%'}]}>Sr. No.</Text>
+                <Text style={[styles.bold, styles.taskHeader]}>Task</Text>
+                <Text style={[styles.bold, styles.descHeader]}>
+                  Description
+                </Text>
+                <Text style={styles.bold}>Amount</Text>
+              </View>
 
-            {/* Table Data */}
-            <FlatList
-              data={data}
-              renderItem={renderItem}
-              keyExtractor={(_, i) => i.toString()}
-            />
+              {/* Table Data */}
+              <FlatList
+                data={data}
+                renderItem={renderItem}
+                keyExtractor={(_, i) => i.toString()}
+              />
 
-            {/* Total */}
-            <View style={[styles.totalRow, {justifyContent: 'space-between'}]}>
-              <Text style={styles.totalLabel}>Total Value</Text>
-              <Text style={styles.totalValue}>
-                {formData.currency} {finalTotalAmount.toFixed(2)}
+              {/* Total */}
+              <View
+                style={[styles.totalRow, {justifyContent: 'space-between'}]}>
+                <Text style={styles.totalLabel}>Total Value</Text>
+                <Text style={styles.totalValue}>
+                  {formData.currency} {finalTotalAmount.toFixed(2)}
+                </Text>
+              </View>
+
+              {/* In Words */}
+              <Text style={styles.words}>
+                In Words: {formData.currency} {amountInWords} Only /-
+                {/* In Words: AUD {formData} Only /- */}
               </Text>
             </View>
 
-            {/* In Words */}
-            <Text style={styles.words}>
-              In Words: {formData.currency} {amountInWords} Only /-
-              {/* In Words: AUD {formData} Only /- */}
-            </Text>
-          </View>
-
-          <View style={{padding: 16}}>
-            {renderHeader()}
-
-            <View
-              style={[styles.row, {justifyContent: 'space-between', gap: 170}]}>
-              <View style={styles.column}>
-                {formData.bankNamed && (
-                  <View style={styles.block}>
-                    <Item label="Bank" value={formData.bankNamed} />
-                    <Item label="Branch" value={formData.BranchName} />
-                    <Item label="Account No." value={formData.accNo} />
-                    <Item label="Account Name" value={formData.accName} />
-                    <Item label="Account Type" value={formData.accType} />
-                    <Item label="IFSC" value={formData.ifscCode} />
-                    <Item label="Swift Code" value={formData.swiftCode} />
-                  </View>
-                )}
-
-                {(formData.PaytmId ||
-                  formData.payPalId ||
-                  formData.wiseId ||
-                  formData.payoneerId) && (
-                  <View style={styles.block}>
-                    {formData.PaytmId && (
-                      <Item label="Paytm Id" value={formData.PaytmId} />
-                    )}
-                    {formData.payPalId && (
-                      <Item label="Paypal Id" value={formData.payPalId} />
-                    )}
-                    {formData.wiseId && (
-                      <Item label="Wise Id" value={formData.wiseId} />
-                    )}
-                    {formData.payoneerId && (
-                      <Item label="Payoneer Id" value={formData.payoneerId} />
-                    )}
-                  </View>
-                )}
-              </View>
+            <View style={{padding: 16}}>
+              {renderHeader()}
 
               <View
                 style={[
-                  styles.column,
-                  {alignSelf: 'flex-end', paddingLeft: 100},
+                  styles.row,
+                  {justifyContent: 'space-between', gap: 170},
                 ]}>
-                <View style={styles.block}>
-                  {/* <Text style={styles.subtitle}>Company Detail</Text> */}
-                  <Item label="Trade Name" value={formData.trade} />
-                  {formData.gstNo && (
-                    <Item label="Ifsc Code" value={formData.ifsc} />
-                  )}
-                  <Item label="GSTIN" value={formData.CompanygstNo} />
-                  {!formData.gstNo && (
-                    <Item label="PAN" value={formData.panNo} />
-                  )}
-                  <Item label="Address" value={formData.companyAddress} />
-                  {formData?.signature && (
-                    <View style={styles.signatureBlock}>
-                      <Image
-                        source={{
-                          uri: `https://invoice-backend.base2brand.com${formData.signature}`,
-                        }}
-                        style={styles.signature}
-                        resizeMode="cover"
-                      />
+                <View style={styles.column}>
+                  {formData.bankNamed && (
+                    <View style={styles.block}>
+                      <Item label="Bank" value={formData.bankNamed} />
+                      <Item label="Branch" value={formData.BranchName} />
+                      <Item label="Account No." value={formData.accNo} />
+                      <Item label="Account Name" value={formData.accName} />
+                      <Item label="Account Type" value={formData.accType} />
+                      <Item label="IFSC" value={formData.ifscCode} />
+                      <Item label="Swift Code" value={formData.swiftCode} />
                     </View>
                   )}
-                  <Item label="" value={formData?.trade} />
-                </View>
-              </View>
-            </View>
-          </View>
 
-          <View style={[styles.footerWrapper, {width: '100%'}]}>
-            <View
-              style={{
-                flexDirection: 'row',
-                gap: 20,
-                position: 'absolute',
-                top: 150,
-                left: 40,
-                zIndex: '9999999',
-              }}>
-              {/* Phone Section */}
-              <View style={styles.section}>
-                <Icon name="call" size={20} color="#fff" style={styles.icon} />
-                <View>
-                  <Text style={[styles.text, {color: '#fff'}]}>
-                    +91 98720 84850
-                  </Text>
-                  <Text style={[styles.text, {color: '#fff'}]}>
-                    +91 83601 16967
-                  </Text>
+                  {(formData.PaytmId ||
+                    formData.payPalId ||
+                    formData.wiseId ||
+                    formData.payoneerId) && (
+                    <View style={styles.block}>
+                      {formData.PaytmId && (
+                        <Item label="Paytm Id" value={formData.PaytmId} />
+                      )}
+                      {formData.payPalId && (
+                        <Item label="Paypal Id" value={formData.payPalId} />
+                      )}
+                      {formData.wiseId && (
+                        <Item label="Wise Id" value={formData.wiseId} />
+                      )}
+                      {formData.payoneerId && (
+                        <Item label="Payoneer Id" value={formData.payoneerId} />
+                      )}
+                    </View>
+                  )}
                 </View>
-              </View>
 
-              {/* Website/Email Section */}
-              <View style={styles.section}>
-                <Icon name="globe" size={20} color="#fff" style={styles.icon} />
-                <View>
-                  <Text style={[styles.text, {color: '#fff'}]}>
-                    www.base2brand.com
-                  </Text>
-                  <Text
-                    style={[styles.text, styles.link, {color: '#fff'}]}
-                    onPress={() =>
-                      Linking.openURL('mailto:hello@base2brand.com')
-                    }>
-                    hello@base2brand.com
-                  </Text>
-                </View>
-              </View>
-
-              {/* Address Section */}
-              <View style={styles.section}>
-                <Icon
-                  name="location-sharp"
-                  size={20}
-                  color="#fff"
-                  style={styles.icon}
-                />
-                <View style={{}}>
-                  <Text style={[styles.text, {color: '#fff'}]}>
-                    F-209, Phase 8B, Industrial Area, Sector 74, Sahibzada Ajit
-                    Singh Nagar,
-                  </Text>
-                  <Text style={[styles.text, {color: '#fff'}]}>
-                    Punjab 160074
-                  </Text>
+                <View
+                  style={[
+                    styles.column,
+                    {alignSelf: 'flex-end', paddingLeft: 100},
+                  ]}>
+                  <View style={styles.block}>
+                    {/* <Text style={styles.subtitle}>Company Detail</Text> */}
+                    <Item label="Trade Name" value={formData.trade} />
+                    {formData.gstNo && (
+                      <Item label="Ifsc Code" value={formData.ifsc} />
+                    )}
+                    <Item label="GSTIN" value={formData.CompanygstNo} />
+                    {!formData.gstNo && (
+                      <Item label="PAN" value={formData.panNo} />
+                    )}
+                    <Item label="Address" value={formData.companyAddress} />
+                    {formData?.signature && (
+                      <View style={styles.signatureBlock}>
+                        <Image
+                          source={{
+                            uri: `https://invoice-backend.base2brand.com${formData.signature}`,
+                          }}
+                          style={styles.signature}
+                          resizeMode="cover"
+                        />
+                      </View>
+                    )}
+                    <Item label="" value={formData?.trade} />
+                  </View>
                 </View>
               </View>
             </View>
 
-            {/* Banner Image */}
-            <Image
-              source={require('../assests/invoice_banner.png')} // Update path as needed
-              style={styles.bannerImage}
-              resizeMode="cover"
-            />
+            <View style={[styles.footerWrapper, {width: '100%'}]}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: 20,
+                  position: 'absolute',
+                  top: 150,
+                  left: 40,
+                  zIndex: '9999999',
+                }}>
+                {/* Phone Section */}
+                <View style={styles.section}>
+                  <Icon
+                    name="call"
+                    size={20}
+                    color="#fff"
+                    style={styles.icon}
+                  />
+                  <View>
+                    <Text style={[styles.text, {color: '#fff'}]}>
+                      +91 98720 84850
+                    </Text>
+                    <Text style={[styles.text, {color: '#fff'}]}>
+                      +91 83601 16967
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Website/Email Section */}
+                <View style={styles.section}>
+                  <Icon
+                    name="globe"
+                    size={20}
+                    color="#fff"
+                    style={styles.icon}
+                  />
+                  <View>
+                    <Text style={[styles.text, {color: '#fff'}]}>
+                      www.base2brand.com
+                    </Text>
+                    <Text
+                      style={[styles.text, styles.link, {color: '#fff'}]}
+                      onPress={() =>
+                        Linking.openURL('mailto:hello@base2brand.com')
+                      }>
+                      hello@base2brand.com
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Address Section */}
+                <View style={styles.section}>
+                  <Icon
+                    name="location-sharp"
+                    size={20}
+                    color="#fff"
+                    style={styles.icon}
+                  />
+                  <View style={{}}>
+                    <Text style={[styles.text, {color: '#fff'}]}>
+                      F-209, Phase 8B, Industrial Area, Sector 74, Sahibzada
+                      Ajit Singh Nagar,
+                    </Text>
+                    <Text style={[styles.text, {color: '#fff'}]}>
+                      Punjab 160074
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Banner Image */}
+              <Image
+                source={require('../assests/invoice_banner.png')} // Update path as needed
+                style={styles.bannerImage}
+                resizeMode="cover"
+              />
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
       </ViewShot>
     </View>
   );
@@ -1012,7 +1022,7 @@ const styles = StyleSheet.create({
     top: '40%',
     transform: 'translate(-50%, -50%)',
     left: '25%',
-    transform: [{ translateX: -90 }, { translateY: -30 }], 
+    transform: [{translateX: -90}, {translateY: -30}],
     opacity: 0.1,
   },
   headerInvoice: {
