@@ -392,9 +392,7 @@ const ProjectList = ({navigation}) => {
         </TouchableOpacity>
         <View style={styles.header}>
           {/* Add your statistics rows here using Text components */}
-
           <Text style={{fontWeight: 'bold'}}>Invoices: {invoices.length}</Text>
-
           <View
             style={{
               flexDirection: 'row',
@@ -427,7 +425,6 @@ const ProjectList = ({navigation}) => {
               <Text style={{fontWeight: 'bold'}}>USD:</Text> {totalUSD}
             </Text>
           </View>
-
           <View
             style={{
               flexDirection: 'row',
@@ -436,7 +433,7 @@ const ProjectList = ({navigation}) => {
               marginTop: 10,
             }}>
             <Text>
-              <Text style={{fontWeight: 'bold'}}>Total Amount</Text>
+              <Text style={{fontWeight: 'bold'}}>Total Amount:</Text>
             </Text>
             <Text>
               <Text style={{fontWeight: 'bold'}}>AUD:</Text> {totalAUDCr}
@@ -586,26 +583,15 @@ const ProjectList = ({navigation}) => {
             Client Name{' '}
             {sortColumn == 'clientName' && (sortOrder === 'asc' ? '↑' : '↓')}
           </Text>
-
           <Text style={[styles.headerCell]}>Company </Text>
-          <Text
-            style={[styles.headerCell,]}>
-            Status
-          </Text>
-
-          <Text style={[styles.headerCell]}>
-            Bank Name
-          </Text>
-          <Text
-            style={[styles.headerCell]}>
-            Acc. No
-          </Text>
+          <Text style={[styles.headerCell]}>Status</Text>
+          <Text style={[styles.headerCell]}>Bank Name</Text>
+          <Text style={[styles.headerCell]}>Acc. No</Text>
           <Text style={[styles.headerCell]}>Amount</Text>
           <Text style={[styles.headerCell]}>Original</Text>
           <Text style={[styles.headerCell]}>Date</Text>
           <Text style={[styles.headerCell]}>Action</Text>
         </View>
-
         {/* List of Items */}
         <FlatList
           data={sortedItems}
@@ -686,7 +672,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#f2f2f2',
     paddingVertical: 10,
-    justifyContent:"space-between"
+    justifyContent: 'space-between',
   },
   headerCell: {
     // flex: 1, // adjust width here
