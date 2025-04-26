@@ -133,9 +133,9 @@ const DetailsScreen = ({navigation}) => {
         {/* Table Header */}
         <View style={styles.headerContainer}>
           <Text style={[styles.headerText]}>Trade Name</Text>
-          <Text style={[styles.headerText, {paddingLeft: 100}]}>IFSC</Text>
-          <Text style={[styles.headerText, {paddingLeft: 120}]}>PAN No</Text>
-          <Text style={[styles.headerText, {paddingLeft: 180}]}>GST</Text>
+          <Text style={[styles.headerText, {paddingLeft: 140}]}>IFSC</Text>
+          <Text style={[styles.headerText, {paddingLeft: 150,}]}>PAN No</Text>
+          <Text style={[styles.headerText, {paddingLeft: 140}]}>GST</Text>
           <Text
             style={[styles.headerText, {paddingLeft: 120, textAlign: 'right'}]}>
             Action
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',

@@ -96,7 +96,6 @@ export default function StackNavigator() {
           <Stack.Screen name="Invoice" component={Invoice} />
           <Stack.Screen name="Appointment" component={Appointment} />
           <Stack.Screen name="AppointMentPdf" component={AppointMentPdf} />
-
           <Stack.Screen name="AppointMentForm" component={AppointMentForm} />
           <Stack.Screen name="ExperienceLetter" component={ExperienceLetter} />
           <Stack.Screen name="ExperienceLetterForm" component={ExperienceLetterForm} />
@@ -104,8 +103,7 @@ export default function StackNavigator() {
           <Stack.Screen name="Miscellaneous" component={Miscellaneous} />
           <Stack.Screen name="MiscellaneousForm" component={MiscellaneousForm} />
           <Stack.Screen name="LetterPdf" component={LetterPdf} />
-
-
+          <Stack.Screen name="Login" component={LoginScreen} />
         </>
       ) : (
         <>

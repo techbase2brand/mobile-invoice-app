@@ -151,7 +151,10 @@ const ProjectList = ({navigation}) => {
         });
     }
   };
-
+  const resetData = () => {
+    setEndDate(null);
+    setStartDate(null);
+  };
   const fetchInvoices = async () => {
     const token = await AsyncStorage.getItem('token'); // Retrieve the token from localStorage
     const headers = {
@@ -249,17 +252,20 @@ const ProjectList = ({navigation}) => {
     setSelectedDays(value);
     setModalVisible(false);
   };
+
   const handleSelect = (type, value) => {
     if (type === 'payment') {
       setPaymentStatus(value);
-    } else if (type === 'duplicate') {
+    } else if (type == 'duplicate') {
       setDuplicateFilter(value);
     }
     setActiveModal(null);
   };
+  
   const handleSearch = () => {
     fetchInvoices();
   };
+
   const renderOptions = (type, options) => (
     <FlatList
       data={options}
@@ -320,62 +326,67 @@ const ProjectList = ({navigation}) => {
         return '';
     }
   };
+
+  console.log('dudfff', duplicateFilter);
   // Rest of your existing logic (fetchInvoices, handleDelete, handleDuplicate, sorting, etc.)
-  // Keep all the business logic functions same as original, just update the JSX to React Native components
+  // Keep 23 the business logic functions same as original, just update the JSX to React Native components
 
-  const renderItem = ({item}) => (
-    <View style={styles.itemContainer}>
-      <View style={styles.row}>
-        <Text style={styles.cell}>{item.client || 'N/A'}</Text>
-        <Text style={styles.cell}>{item.company || 'N/A'}</Text>
-        <Text style={styles.cell}>{item.paymentStatus || 'N/A'}</Text>
-        <Text style={styles.cell}>{item.bankNamed || 'N/A'}</Text>
-        <Text style={styles.cell}>{item.accNo || 'N/A'}</Text>
-        <Text style={styles.cell}>
-          {item.duplicate && (
-            <Text style={styles.duplicateBadge}>{item.duplicate}</Text>
-          )}
-        </Text>
-        <Text style={styles.cell}>
-          {item.selectDate
-            ? new Date(item.selectDate).toLocaleDateString()
-            : 'N/A'}
-        </Text>
-        <TouchableOpacity onPress={() => handleToggleDropdown(item._id)}>
-          <Text style={styles.actionButton}>...</Text>
-        </TouchableOpacity>
-      </View>
-
-      {openItemId === item._id && (
-        <View style={styles.actionMenu}>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('CreateInvoice', {invoiceId: item._id})
-            }
-            style={styles.menuItem}>
-            <Text>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleDelete(item._id)}
-            style={styles.menuItem}>
-            <Text>Delete</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('Invoice', {invoiceId: item._id})
-            }
-            style={styles.menuItem}>
-            <Text>Download PDF</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleDuplicate(item._id)}
-            style={styles.menuItem}>
-            <Text>Duplicate</Text>
+  const renderItem = ({item, index}) => {
+    const backgroundColor = index % 2 !== 0 ? '#e9e9e9' : '#fff';
+    return (
+      <View style={[styles.itemContainer, {backgroundColor}]}>
+        <View style={styles.row}>
+          <Text style={styles.cell}>{item.client || 'N/A'}</Text>
+          <Text style={styles.cell}>{item.company || 'N/A'}</Text>
+          <Text style={styles.cell}>{item.paymentStatus || 'N/A'}</Text>
+          <Text style={styles.cell}>{item.bankNamed || 'N/A'}</Text>
+          <Text style={styles.cell}>{item.accNo || 'N/A'}</Text>
+          <Text style={styles.cell}>
+            {item?.duplicate && (
+              <Text style={styles.duplicateBadge}>{item.duplicate}</Text>
+            )}
+          </Text>
+          <Text style={styles.cell}>
+            {item?.selectDate
+              ? new Date(item.selectDate).toLocaleDateString()
+              : 'N/A'}
+          </Text>
+          <TouchableOpacity onPress={() => handleToggleDropdown(item._id)}>
+            <Text style={styles.actionButton}>...</Text>
           </TouchableOpacity>
         </View>
-      )}
-    </View>
-  );
+
+        {openItemId === item._id && (
+          <View style={styles.actionMenu}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('CreateInvoice', {invoiceId: item._id})
+              }
+              style={styles.menuItem}>
+              <Text>Edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleDelete(item._id)}
+              style={styles.menuItem}>
+              <Text>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('Invoice', {invoiceId: item._id})
+              }
+              style={styles.menuItem}>
+              <Text>Download PDF</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleDuplicate(item._id)}
+              style={styles.menuItem}>
+              <Text>Duplicate</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    );
+  };
 
   return (
     <View style={{marginTop: 20}}>
@@ -510,7 +521,9 @@ const ProjectList = ({navigation}) => {
             <Text style={styles.selectorText}>
               {duplicateFilter === 'Duplicated'
                 ? 'Duplicated'
-                : 'Not Duplicated'}
+                : duplicateFilter == 'Not Duplicated'
+                ? 'Not Duplicated'
+                : 'Filter by Duplicate Status'}
             </Text>
           </TouchableOpacity>
 
@@ -574,6 +587,13 @@ const ProjectList = ({navigation}) => {
           </TouchableOpacity>
           {/* Add other filter components (selects) using TouchableOpacity + Modal */}
         </View>
+        <TouchableOpacity
+          style={[styles.addButton, {width: '10%'}]}
+          onPress={resetData}>
+          <View style={styles.buttonContent}>
+            <Text style={styles.addButtonText}> Reset</Text>
+          </View>
+        </TouchableOpacity>
 
         {/* Table Header */}
         <View style={styles.headerRow}>
@@ -583,14 +603,14 @@ const ProjectList = ({navigation}) => {
             Client Name{' '}
             {sortColumn == 'clientName' && (sortOrder === 'asc' ? '↑' : '↓')}
           </Text>
-          <Text style={[styles.headerCell]}>Company </Text>
-          <Text style={[styles.headerCell]}>Status</Text>
-          <Text style={[styles.headerCell]}>Bank Name</Text>
-          <Text style={[styles.headerCell]}>Acc. No</Text>
-          <Text style={[styles.headerCell]}>Amount</Text>
-          <Text style={[styles.headerCell]}>Original</Text>
-          <Text style={[styles.headerCell]}>Date</Text>
-          <Text style={[styles.headerCell]}>Action</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 40}]}>Company </Text>
+          <Text style={[styles.headerCell, {paddingLeft: 80}]}>Status</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 80}]}>Bank Name</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 80}]}>Acc. No</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 40}]}>Amount</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 40}]}>Original</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 40}]}>Date</Text>
+          <Text style={[styles.headerCell, {paddingLeft: 60}]}>Action</Text>
         </View>
         {/* List of Items */}
         <FlatList
@@ -672,7 +692,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#f2f2f2',
     paddingVertical: 10,
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
   },
   headerCell: {
     // flex: 1, // adjust width here

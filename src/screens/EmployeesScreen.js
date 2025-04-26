@@ -177,7 +177,7 @@ const EmployeesScreen = () => {
           disabled={currentPage === 1}>
           <Text style={styles.paginateBtn}>Previous</Text>
         </TouchableOpacity>
-        <Text>
+        <Text style={{marginTop:6}}>
           Page {currentPage} of {totalPages}
         </Text>
         <TouchableOpacity
@@ -213,7 +213,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   headerText: {
-    flex: 1,
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',

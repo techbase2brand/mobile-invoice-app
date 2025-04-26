@@ -93,15 +93,15 @@ const handleEdit = item => {
         </View>
       {/* Header Row */}
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Bank Name</Text>
-        <Text style={styles.headerText}>Acc. No.</Text>
-        <Text style={styles.headerText}>Acc. Type</Text>
-        <Text style={styles.headerText}>Branch Name</Text>
-        <Text style={styles.headerText}>IFSC Code</Text>
-        <Text style={styles.headerText}>Swift Code</Text>
-        <Text style={styles.headerText}>Acc. Name</Text>
-        <Text style={styles.headerText}>Trade Name</Text>
-        <Text style={styles.headerText}>Action</Text>
+        <Text style={[styles.headerText,{paddingLeft:10}]}>Bank Name</Text>
+        <Text style={[styles.headerText,{paddingLeft:60}]}>Acc. No.</Text>
+        <Text style={[styles.headerText,{paddingLeft:60}]}>Acc. Type</Text>
+        <Text style={[styles.headerText,{paddingLeft:50}]}>Branch Name</Text>
+        <Text style={[styles.headerText,{paddingLeft:30}]}>IFSC Code</Text>
+        <Text style={[styles.headerText,{paddingLeft:35}]}>Swift Code</Text>
+        <Text style={[styles.headerText,{paddingLeft:45}]}>Acc. Name</Text>
+        <Text style={[styles.headerText,{paddingLeft:40}]}>Trade Name</Text>
+        <Text style={[styles.headerText,{paddingLeft:30}]}>Action</Text>
       </View>
 
       {/* FlatList to display data */}
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     paddingVertical: 10,
     borderBottomWidth: 2,
     borderBottomColor: '#ccc',
@@ -217,7 +217,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   headerText: {
-    flex: 1,
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',

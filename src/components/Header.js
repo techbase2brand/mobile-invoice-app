@@ -1,7 +1,10 @@
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Modal, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Header = ({title, navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -68,6 +71,14 @@ const Header = ({title, navigation}) => {
       action: () => navigation.navigate('Miscellaneous'),
     },
   ];
+
+  const handleLogout = () => {
+    AsyncStorage.removeItem("email");
+    AsyncStorage.removeItem("password");
+    AsyncStorage.removeItem("token");
+    navigation.navigate("Login")
+  
+  }
   return (
     <View style={styles.header}>
       {/* Left: Hamburger Icon */}
@@ -78,8 +89,13 @@ const Header = ({title, navigation}) => {
       {/* Center: Screen Title */}
       <Text style={styles.headerTitle}>{title}</Text>
 
+
+      <TouchableOpacity onPress={handleLogout}>
+        <AntDesign name="poweroff" size={24} color="red" />
+      </TouchableOpacity>
+      {/* <Text style={styles.headerTitle}>{"logout"}</Text> */}
       {/* Empty space for right alignment */}
-      <View style={{width: 24}} />
+      {/* <View style={{width: 24}} /> */}
 
       {/* Modal for Sidebar Menu */}
       <Modal visible={modalVisible} transparent={true} animationType="none">

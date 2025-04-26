@@ -140,15 +140,15 @@ const WagesScreen = ({navigation}) => {
 
   const renderHeader = () => (
     <View style={styles.headerRow}>
-      <Text style={styles.headerText}>DATE</Text>
-      <Text style={styles.headerText}>EMP. NAME</Text>
-      <Text style={styles.headerText}>F/H NAME</Text>
-      <Text style={[styles.headerText, {marginLeft: 40}]}>DEPT.</Text>
-      <Text style={styles.headerText}>DESIGNATION</Text>
-      <Text style={[styles.headerText, {marginLeft: 20}]}>CODE</Text>
-      <Text style={[styles.headerText, {paddingLeft: 0}]}>COMPANY</Text>
-      <Text style={[styles.headerText, {paddingLeft: 0}]}>RS</Text>
-      <Text style={styles.headerText}>CREATE</Text>
+      <Text style={[styles.headerText, {paddingLeft: 0}]}>DATE</Text>
+      <Text style={[styles.headerText, {paddingLeft: 70}]}>EMP. NAME</Text>
+      <Text style={[styles.headerText, {paddingLeft: 40}]}>F/H NAME</Text>
+      <Text style={[styles.headerText, {paddingLeft: 50}]}>DEPT.</Text>
+      <Text style={[styles.headerText, {paddingLeft: 60}]}>DESIGNATION</Text>
+      <Text style={[styles.headerText, {paddingLeft: 30}]}>CODE</Text>
+      <Text style={[styles.headerText, {paddingLeft: 60}]}>COMPANY</Text>
+      <Text style={[styles.headerText, {paddingLeft: 80}]}>RS</Text>
+      <Text style={[styles.headerText, {paddingLeft: 100}]}>CREATE</Text>
     </View>
   );
   const confirmDelete = id => {
@@ -171,13 +171,15 @@ const WagesScreen = ({navigation}) => {
     }
   };
 
-
   const handleEdit = item => {
     navigation.navigate('AddWagesForm', {
       wagesId: item._id, // or item._id depending on your data structure
     });
   };
-
+ const resetData =()=>{
+  setEndDate(null)
+  setStartDate(null)
+ }
   const handleNavigate = item => {
     navigation.navigate('WagesPdf', {
       wagesPdfId: item._id, // or item._id depending on your data structure
@@ -247,6 +249,13 @@ const WagesScreen = ({navigation}) => {
           transparent={true}
           animationType="slide">
           <View style={styles.modalView}>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedDays(''); 
+                setModalVisible(false);
+              }}>
+              <Text style={styles.modalItem}>Select Date Range</Text>
+            </TouchableOpacity>
             {['7', '30', '90', '180', '365']?.map(days => (
               <TouchableOpacity
                 key={days}
@@ -274,7 +283,15 @@ const WagesScreen = ({navigation}) => {
             </Text>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          style={[styles.addButton, {width:"10%"}]}
+          onPress={resetData}>
+          <View style={styles.buttonContent}>
+            <Text style={styles.addButtonText}> Reset</Text>
+          </View>
+        </TouchableOpacity>
       </View>
+   
       <DateTimePickerModal
         isVisible={isStartDatePickerVisible}
         mode="date"
@@ -299,21 +316,21 @@ const WagesScreen = ({navigation}) => {
         keyExtractor={item => item._id}
         renderItem={renderItem}
         ListEmptyComponent={
-          <Text style={{ textAlign: 'center', marginTop: 20, color: 'gray' }}>
+          <Text style={{textAlign: 'center', marginTop: 20, color: 'gray'}}>
             Data not found
           </Text>
         }
       />
 
-  {  currentItems.length !==0 && <View style={styles.pagination}>
-        {[...Array(totalPages)].map((_, index) => (
-          <TouchableOpacity key={index} onPress={() => paginate(index + 1)}>
-            <Text style={styles.pageButton}>{index + 1}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>}
-
-
+      {currentItems.length !== 0 && (
+        <View style={styles.pagination}>
+          {[...Array(totalPages)].map((_, index) => (
+            <TouchableOpacity key={index} onPress={() => paginate(index + 1)}>
+              <Text style={styles.pageButton}>{index + 1}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
     </View>
   );
 };
@@ -322,7 +339,7 @@ const styles = StyleSheet.create({
   container: {padding: 10},
   heading: {fontSize: 24, fontWeight: 'bold', marginBottom: 10},
   headerRow: {flexDirection: 'row', backgroundColor: '#e5e7eb', padding: 10},
-  headerText: {flex: 1, fontWeight: 'bold', color: '#111827', fontSize: 12},
+  headerText: {fontWeight: 'bold', color: '#111827', fontSize: 12},
   addButton: {
     display: 'flex',
     backgroundColor: 'blue',
