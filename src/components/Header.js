@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Modal, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  StyleSheet,
+  useWindowDimensions,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 
@@ -7,8 +14,20 @@ import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Header = ({title, navigation}) => {
+  const {width, height} = useWindowDimensions();
+  const isLandscape = width > height;
+  const modalStyles = {
+    width: isLandscape ? 300 : '80%',
+    height: '100%',
+    backgroundColor: '#fff',
+    padding: 20,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+  };
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState("Dashboard");
+  const [selectedItem, setSelectedItem] = useState('Dashboard');
   const menuItems = [
     {
       name: 'home',
@@ -73,23 +92,19 @@ const Header = ({title, navigation}) => {
   ];
 
   const handleLogout = () => {
-    AsyncStorage.removeItem("email");
-    AsyncStorage.removeItem("password");
-    AsyncStorage.removeItem("token");
-    navigation.navigate("Login")
-  
-  }
+    AsyncStorage.removeItem('email');
+    AsyncStorage.removeItem('password');
+    AsyncStorage.removeItem('token');
+    navigation.navigate('Login');
+  };
   return (
     <View style={styles.header}>
       {/* Left: Hamburger Icon */}
       <TouchableOpacity onPress={() => setModalVisible(true)}>
         <Icon name="bars" size={24} color="#000" />
       </TouchableOpacity>
-
       {/* Center: Screen Title */}
       <Text style={styles.headerTitle}>{title}</Text>
-
-
       <TouchableOpacity onPress={handleLogout}>
         <AntDesign name="poweroff" size={24} color="red" />
       </TouchableOpacity>
@@ -98,20 +113,35 @@ const Header = ({title, navigation}) => {
       {/* <View style={{width: 24}} /> */}
 
       {/* Modal for Sidebar Menu */}
-      <Modal visible={modalVisible} transparent={true} animationType="none">
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="none"
+        supportedOrientations={['portrait', 'landscape']}>
         <View
           style={styles.modalOverlay}
           onTouchEnd={() => setModalVisible(false)}>
-          <View style={styles.modalContent}>
+          <View
+            style={{
+              backgroundColor: 'white',
+              width: isLandscape ? '30%' : '40%',
+              height: '100%',
+              padding: 20,
+              position: 'absolute',
+              top: 0,
+              left: 0,
+            }}>
             {/* Close Button */}
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
-              style={[styles.closeButton, {flexDirection:'row' }]}>
-                <Text style={{color:'blue', fontSize:20, fontWeight:"700"}}>Invoice</Text>
+              style={[styles.closeButton, {flexDirection: 'row'}]}>
+              <Text style={{color: 'blue', fontSize: 20, fontWeight: '700'}}>
+                Invoice
+              </Text>
               <Icon name="times" size={24} color="#000" />
             </TouchableOpacity>
 
-            {menuItems.map((item, index) => (
+            {menuItems?.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 //    onPress={item.action}
@@ -170,8 +200,8 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     // alignSelf: 'flex-end',
-    justifyContent:"space-between",
-    marginVertical: 20
+    justifyContent: 'space-between',
+    marginVertical: 20,
   },
   menuItem: {
     flexDirection: 'row',

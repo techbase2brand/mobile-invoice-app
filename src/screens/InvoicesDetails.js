@@ -56,7 +56,7 @@ const ProjectList = ({navigation}) => {
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
   const [activeModal, setActiveModal] = useState(null); // 'payment' | 'duplicate' | null
 
-  const itemsPerPage = 50;
+  const itemsPerPage = 15;
   const totalPages = Math.ceil(invoices.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -261,7 +261,7 @@ const ProjectList = ({navigation}) => {
     }
     setActiveModal(null);
   };
-  
+
   const handleSearch = () => {
     fetchInvoices();
   };

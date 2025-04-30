@@ -20,7 +20,7 @@ const BankDetails = ({navigation}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const itemsPerPage = 3; // Set how many items per page you want
+  const itemsPerPage = 15; // Set how many items per page you want
   const totalPages = Math.ceil(data.length / itemsPerPage);
   console.log('datadata', data);
   // Function to paginate data

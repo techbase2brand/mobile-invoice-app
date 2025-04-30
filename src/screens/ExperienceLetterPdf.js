@@ -156,6 +156,9 @@ const ExperienceLetterPdf = ({navigation, route}) => {
       Alert.alert('PDF Error', error.message);
     }
   };
+
+  const companyLogo = data?.companylogo;
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={createPDF}>
@@ -164,7 +167,16 @@ const ExperienceLetterPdf = ({navigation, route}) => {
       {/* <Button title="Download PDF" onPress={generatePDF} /> */}
       <ViewShot ref={viewRef} options={{format: 'png', quality: 0.9}}>
         <ScrollView>
-          <Text style={styles.title}>Experience Letter</Text>
+          <Text style={[styles.title,{color: `${
+                companyLogo === '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                  ? '#ef7e50'
+                  : companyLogo === '/uploads/ks-01.png'
+                  ? '#1F8C97'
+                  : companyLogo ===
+                    '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                  ? '#154880'
+                  : '#042DA0'
+              }`,}]}>Experience Letter</Text>
           <Text>
             Ref No: <Text style={styles.bold}>{data.refNo}</Text>
           </Text>
@@ -185,7 +197,16 @@ const ExperienceLetterPdf = ({navigation, route}) => {
           )}
           <RenderHTML source={{html: data.experienceData}} />
 
-          <View style={styles.mainFooter}>
+          <View style={[styles.mainFooter,{backgroundColor:`${
+              companyLogo === "/uploads/SAI LOGO copy [Recovered]-01 2.png"
+                ? "#ef7e50"
+                : companyLogo === "/uploads/ks-01.png"
+                ? "#1F8C97"
+                : companyLogo ===
+                  "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
+                ? "#154880"
+                : "#042DA0"
+            }`,}]}>
             <View style={styles.footer}>
               <View style={styles.middle}>
                 <View style={styles.iconText}>
@@ -238,11 +259,11 @@ const ExperienceLetterPdf = ({navigation, route}) => {
                 </View>
               </View>
             </View>
-
+{/* 
             <Image
               source={require('../assests/invoice_banner_appoinment.png')}
               style={styles.banner}
-            />
+            /> */}
           </View>
         </ScrollView>
       </ViewShot>
@@ -279,9 +300,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   logo: {
-    width: '100%',
+    width: '50%',
     height: 170,
-    marginVertical: 10,
+    marginBottom: 10,
+    alignSelf:'flex-end'
   },
   experienceText: {
     fontSize: 16,
@@ -295,13 +317,15 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f4f4f4',
     position: 'relative',
+    height:100,
+    marginTop:40
   },
   footer: {
     flexDirection: 'row',
     paddingHorizontal: 30,
     gap: 20,
     position: 'absolute',
-    top: 100,
+    top: 30,
     zIndex: 999999,
   },
   middle: {

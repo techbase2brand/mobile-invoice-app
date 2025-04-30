@@ -17,7 +17,7 @@ import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 
 const AppointMent = () => {
   const [data, setData] = useState([]);
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const navigation = useNavigation();
 

@@ -511,6 +511,8 @@ import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
 import ViewShot from 'react-native-view-shot';
 import { PDFDocument } from 'pdf-lib';
+import Icon from 'react-native-vector-icons/Ionicons';
+
 
 const WagesPdf = ({navigation, route}) => {
   const viewRef = useRef();
@@ -663,6 +665,7 @@ const WagesPdf = ({navigation, route}) => {
     }
   };
 
+  const companyLogo = formData?.companylogo;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -695,7 +698,16 @@ const WagesPdf = ({navigation, route}) => {
           />
           
 
-          <Text style={styles.headerText}>Salary Slip</Text>
+          <Text style={[styles.headerText,{color:`${
+              companyLogo === "/uploads/SAI LOGO copy [Recovered]-01 2.png"
+                ? "#ef7e50"
+                : companyLogo === "/uploads/ks-01.png"
+                ? "#1F8C97"
+                : companyLogo ===
+                  "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
+                ? "#154880"
+                : "#042DA0"
+            }`,}]}>Salary Slip</Text>
         </View>
        
         <View style={styles.content}>
@@ -879,8 +891,72 @@ const WagesPdf = ({navigation, route}) => {
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>
-              This is a system generated PDF sign not required.
+              {/* This is a system generated PDF sign not required. */}
             </Text>
+          </View>
+          <View style={[styles.mainFooter,{backgroundColor:`${
+              companyLogo === "/uploads/SAI LOGO copy [Recovered]-01 2.png"
+                ? "#ef7e50"
+                : companyLogo === "/uploads/ks-01.png"
+                ? "#1F8C97"
+                : companyLogo ===
+                  "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
+                ? "#154880"
+                : "#042DA0"
+            }`,}]}>
+            <View style={styles.footer}>
+              <View style={styles.middle}>
+                <View style={styles.iconText}>
+                  <Icon
+                    name="call"
+                    size={20}
+                    color="#fff"
+                    style={styles.icon}
+                  />
+                  <View>
+                    <Text style={styles.text}>+919872084850</Text>
+                    <Text style={[styles.text, styles.bottomMargin]}>
+                      +918360116967
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              x
+              <View style={styles.middle}>
+                <View style={styles.iconText}>
+                  <Icon
+                    name="globe"
+                    size={20}
+                    color="#fff"
+                    style={styles.icon}
+                  />
+                  <View>
+                    <Text style={styles.text}>www.sailegalassociates.com</Text>
+                    <Text style={styles.text}>
+                      hello@sailegalassociates.com
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <View style={styles.address}>
+                <View style={styles.iconText}>
+                  <Icon
+                    name="location-sharp"
+                    size={20}
+                    color="#fff"
+                    style={styles.icon}
+                  />
+                  <View>
+                    <Text style={styles.text}>
+                      F-209, Phase 8B, Industrial Area, Sector 74, Sahibzada
+                      Ajit Singh Nagar,
+                    </Text>
+                    <Text style={styles.text}>Punjab 160074</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
           </View>
         </View>
       </ScrollView>
@@ -912,8 +988,8 @@ const styles = StyleSheet.create({
     borderBottomColor: '#004681',
   },
   companyLogo: {
-    width: 180,
-    height: 50,
+    width: 250,
+    height: 80,
     marginRight: 20,
   },
   headerText: {
@@ -1049,13 +1125,48 @@ const styles = StyleSheet.create({
   },
   logoInvoiceOverlap: {
     width: 700,
-    height: 200,
+    height: 220,
     position: 'absolute',
     top: '40%',
     transform: 'translate(-50%, -50%)',
     left: '25%',
     transform: [{ translateX: -90 }, { translateY: -30 }], 
     opacity: 0.1,
+  },
+
+  mainFooter: {
+    padding: 16,
+    backgroundColor: '#f4f4f4',
+    position: 'relative',
+    height:100,
+    marginTop:10
+  },
+  footer: {
+    flexDirection: 'row',
+    paddingHorizontal: 30,
+    gap: 20,
+    position: 'absolute',
+    top: 30,
+    zIndex: 999999,
+  },
+  middle: {
+    marginBottom: 12,
+  },
+  address: {
+    marginBottom: 12,
+  },
+  iconText: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  icon: {
+    marginRight: 8,
+    marginTop: 3,
+  },
+  text: {
+    fontSize: 14,
+    color: '#FFF',
   },
 });
 

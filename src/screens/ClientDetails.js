@@ -20,7 +20,7 @@ const ClientDetails = ({navigation}) => {
   const [data, setData] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [itemsPerPage] = useState(50);
+  const [itemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedId, setSelectedId] = useState(null);

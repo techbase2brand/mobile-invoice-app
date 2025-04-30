@@ -17,7 +17,7 @@ import Header from '../components/Header';
 
 const Miscellaneous = () => {
   const [data, setData] = useState([]);
-  const [itemsPerPage] = useState(50);
+  const [itemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const navigation = useNavigation();
 

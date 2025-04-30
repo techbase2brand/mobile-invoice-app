@@ -719,6 +719,8 @@ const Invoice = ({navigation, route}) => {
     }
   };
 
+  const companyLogo = formData?.companylogo;
+
   return (
     <View style={{marginTop: 40, paddingHorizontal: 16}}>
       <TouchableOpacity style={styles.button} onPress={createPDF1}>
@@ -732,12 +734,12 @@ const Invoice = ({navigation, route}) => {
             }}
             style={styles.logoInvoiceOverlap}
           />
-
-          <Image
+          <View style={styles.headerInvoice}></View>
+          {/* <Image
             source={require('../assests/header_invoice.png')} // Make sure the image is in your assets folder
             style={styles.headerInvoice}
             resizeMode="cover"
-          />
+          /> */}
 
           <Image
             source={{
@@ -904,13 +906,22 @@ const Invoice = ({navigation, route}) => {
               </View>
             </View>
 
-            <View style={[styles.footerWrapper, {width: '100%'}]}>
+            <View style={[styles.footerWrapper, {backgroundColor:`${
+              companyLogo === "/uploads/SAI LOGO copy [Recovered]-01 2.png"
+                ? "#ef7e50"
+                : companyLogo === "/uploads/ks-01.png"
+                ? "#1F8C97"
+                : companyLogo ===
+                  "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
+                ? "#154880"
+                : "#042DA0"
+            }`,}]}>
               <View
                 style={{
                   flexDirection: 'row',
                   gap: 20,
                   position: 'absolute',
-                  top: 150,
+                  top: 30,
                   left: 40,
                   zIndex: '9999999',
                 }}>
@@ -975,11 +986,11 @@ const Invoice = ({navigation, route}) => {
               </View>
 
               {/* Banner Image */}
-              <Image
+              {/* <Image
                 source={require('../assests/invoice_banner.png')} // Update path as needed
                 style={styles.bannerImage}
                 resizeMode="cover"
-              />
+              /> */}
             </View>
           </View>
         </ScrollView>
@@ -1172,6 +1183,8 @@ const styles = StyleSheet.create({
 
   footerWrapper: {
     // padding: 16,
+    width:'100%',
+    height:100
   },
   footer: {
     // backgroundColor: '#fff',

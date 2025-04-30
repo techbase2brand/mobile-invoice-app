@@ -16,7 +16,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CreditCardListScreen = ({navigation}) => {
   const [data, setData] = useState([]);
-  const [itemsPerPage] = useState(50);
+  const [itemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
 

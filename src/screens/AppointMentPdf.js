@@ -121,7 +121,7 @@ const AppointMentPdf = ({route}) => {
     const options = {day: 'numeric', month: 'long', year: 'numeric'};
     return new Date(dateStr).toLocaleDateString('en-US', options);
   };
-
+  const companyLogo = data?.companyLogo;
   return (
     <View style={{padding: 20}}>
       <TouchableOpacity style={styles.button} onPress={createPDF}>
@@ -151,15 +151,41 @@ const AppointMentPdf = ({route}) => {
               paddingVertical: 20,
             }}>
             <Image
-              source={require('../assests/logo-b2b.png')}
-              style={{width: 200, height: 50, alignSelf: 'center'}}
+              source={{
+                uri: `https://invoice-backend.base2brand.com${data?.companyLogo}`,
+              }}
+              style={{
+                width: 180,
+                height: 80,
+                marginTop: 10,
+                alignSelf: 'center',
+              }}
             />
           </View>
           <Image
-           source={require('../assests/b2b-icon.png')}
-          style={styles.logoInvoiceOverlap}
-        />
-          <Text style={{fontWeight: 'bold', marginBottom:10}}>Appointment Letter</Text>
+            source={{
+              uri: `https://invoice-backend.base2brand.com${data?.companyLogo}`,
+            }}
+            style={styles.logoInvoiceOverlap}
+          />
+          <Text
+            style={{
+              fontWeight: 'bold',
+              fontSize:24,
+              marginBottom: 10,
+              color: `${
+                companyLogo === '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                  ? '#ef7e50'
+                  : companyLogo === '/uploads/ks-01.png'
+                  ? '#1F8C97'
+                  : companyLogo ===
+                    '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                  ? '#154880'
+                  : '#042DA0'
+              }`,
+            }}>
+            Appointment Letter
+          </Text>
           <Text style={{fontWeight: 'bold'}}>Ref No: {data.refNo}</Text>
           <Text style={{marginBottom: 10}}>
             Date: {formatDate(data.letterHeadDate)}
@@ -168,7 +194,7 @@ const AppointMentPdf = ({route}) => {
             //   contentWidth={width}
             source={{html: data?.appointMentData}}
           />
-          <View style={styles.mainFooter}>
+          <View style={[styles.mainFooter,c]}>
             <View style={styles.footer}>
               <View style={styles.middle}>
                 <View style={styles.iconText}>
@@ -222,10 +248,10 @@ const AppointMentPdf = ({route}) => {
               </View>
             </View>
 
-            <Image
+            {/* <Image
               source={require('../assests/invoice_banner_appoinment.png')}
               style={styles.banner}
-            />
+            /> */}
           </View>
         </ScrollView>
       </ViewShot>
@@ -238,13 +264,15 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f4f4f4',
     position: 'relative',
+    height: 100,
+    marginTop:40
   },
   footer: {
     flexDirection: 'row',
     paddingHorizontal: 30,
     gap: 20,
     position: 'absolute',
-    top: 100,
+    top: 30,
     zIndex: 999999,
   },
   middle: {
@@ -294,7 +322,7 @@ const styles = StyleSheet.create({
     top: '30%',
     transform: 'translate(-50%, -50%)',
     left: '25%',
-    transform: [{ translateX: -90 }, { translateY: -30 }], 
+    transform: [{translateX: -90}, {translateY: -30}],
     opacity: 0.1,
   },
 });

@@ -46,7 +46,7 @@ const DetailsScreen = ({navigation}) => {
   const [data, setData] = useState([]);
   const [tokenData, setTokenData] = useState('');
 
-  const itemsPerPage = 10; // Set how many items per page you want
+  const itemsPerPage = 15; // Set how many items per page you want
   const totalPages = Math.ceil(data.length / itemsPerPage);
   // Function to paginate data
   const getPaginatedData = () => {
