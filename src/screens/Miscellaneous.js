@@ -14,10 +14,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Feather';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const Miscellaneous = () => {
   const [data, setData] = useState([]);
-  const [itemsPerPage] = useState(15);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const navigation = useNavigation();
 
@@ -130,6 +131,10 @@ const Miscellaneous = () => {
             onPress={() => paginate(currentPage + 1)}>
             <Text style={styles.paginationButton}>Next</Text>
           </TouchableOpacity>
+          <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
         </View>
       </View>
     </View>

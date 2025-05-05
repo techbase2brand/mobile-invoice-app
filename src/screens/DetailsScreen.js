@@ -37,16 +37,17 @@ import Header from '../components/Header';
 import axios from 'axios';
 import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const DetailsScreen = ({navigation}) => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [data, setData] = useState([]);
   const [tokenData, setTokenData] = useState('');
 
-  const itemsPerPage = 15; // Set how many items per page you want
+  // const itemsPerPage = 15; // Set how many items per page you want
   const totalPages = Math.ceil(data.length / itemsPerPage);
   // Function to paginate data
   const getPaginatedData = () => {
@@ -134,7 +135,7 @@ const DetailsScreen = ({navigation}) => {
         <View style={styles.headerContainer}>
           <Text style={[styles.headerText]}>Trade Name</Text>
           <Text style={[styles.headerText, {paddingLeft: 140}]}>IFSC</Text>
-          <Text style={[styles.headerText, {paddingLeft: 150,}]}>PAN No</Text>
+          <Text style={[styles.headerText, {paddingLeft: 150}]}>PAN No</Text>
           <Text style={[styles.headerText, {paddingLeft: 140}]}>GST</Text>
           <Text
             style={[styles.headerText, {paddingLeft: 120, textAlign: 'right'}]}>
@@ -220,6 +221,10 @@ const DetailsScreen = ({navigation}) => {
             disabled={currentPage === totalPages}>
             <Text style={styles.pageButton}>Next</Text>
           </TouchableOpacity>
+          <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
         </View>
       </View>
     </View>

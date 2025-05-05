@@ -9,8 +9,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-
-import Toast from 'react-native-toast-message';
+import {useNavigationState} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Header = ({title, navigation}) => {
@@ -28,20 +27,24 @@ const Header = ({title, navigation}) => {
   };
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState('Dashboard');
+
   const menuItems = [
     {
       name: 'home',
       label: 'Dashboard',
+      routeName: 'Home',
       action: () => navigation.navigate('Home'),
     },
     {
       name: 'building',
       label: 'Company Detail',
+      routeName: 'Details',
       action: () => navigation.navigate('Details'),
     },
     {
       name: 'bank',
       label: 'Bank Detail',
+      routeName: 'BankDetails',
       action: () => navigation.navigate('BankDetails'),
     },
     {
@@ -52,21 +55,25 @@ const Header = ({title, navigation}) => {
     {
       name: 'file-text',
       label: 'Invoice Detail',
+      routeName: 'InvoicesDetails',
       action: () => navigation.navigate('InvoicesDetails'),
     },
     {
       name: 'user-plus',
       label: 'Add Employee',
+      routeName: 'Employees',
       action: () => navigation.navigate('Employees'),
     },
     {
       name: 'money',
       label: 'Create Wages',
+      routeName: 'Wages',
       action: () => navigation.navigate('Wages'),
     },
     {
       name: 'credit-card',
       label: 'Credit Cards',
+      routeName: 'CreditCard',
       action: () => navigation.navigate('CreditCard'),
     },
     // {
@@ -77,16 +84,19 @@ const Header = ({title, navigation}) => {
     {
       name: 'list-alt',
       label: 'Appointment Letter',
+      routeName: 'Appointment',
       action: () => navigation.navigate('Appointment'),
     },
     {
       name: 'leanpub',
       label: 'Experience Letter',
+      routeName: 'ExperienceLetter',
       action: () => navigation.navigate('ExperienceLetter'),
     },
     {
       name: 'folder',
       label: 'Miscellaneous',
+      routeName: 'Miscellaneous',
       action: () => navigation.navigate('Miscellaneous'),
     },
   ];
@@ -97,6 +107,19 @@ const Header = ({title, navigation}) => {
     AsyncStorage.removeItem('token');
     navigation.navigate('Login');
   };
+
+  const handleNavigate = item => {
+    setSelectedItem(item.label);
+    item.action();
+  };
+
+  const currentRoute = useNavigationState(state => {
+    const route = state.routes[state.index];
+    return route.name;
+  });
+
+  console.log('currentRoutecurrentRoute', currentRoute);
+
   return (
     <View style={styles.header}>
       {/* Left: Hamburger Icon */}
@@ -140,25 +163,22 @@ const Header = ({title, navigation}) => {
               </Text>
               <Icon name="times" size={24} color="#000" />
             </TouchableOpacity>
-
             {menuItems?.map((item, index) => (
               <TouchableOpacity
                 key={index}
-                //    onPress={item.action}
                 onPress={() => {
-                  setSelectedItem(item.label);
                   item.action();
                 }}
                 style={styles.menuItem}>
                 <Icon
-                  name={item.name}
+                  name={item?.name}
                   size={20}
-                  color={selectedItem === item.label ? 'blue' : '#000'}
+                  color={currentRoute == item.routeName ? 'blue' : '#000'}
                 />
                 <Text
                   style={[
                     styles.menuText,
-                    {color: selectedItem === item.label ? 'blue' : '#000'},
+                    {color: currentRoute == item.routeName ? 'blue' : '#000'},
                   ]}>
                   {item.label}
                 </Text>

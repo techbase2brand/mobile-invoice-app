@@ -13,10 +13,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import Icon from 'react-native-vector-icons/Feather';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const ExperienceLetter = ({navigation}) => {
   const [data, setData] = useState([]);
-  const [itemsPerPage] = useState(15);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(data?.length / itemsPerPage);
@@ -134,6 +135,10 @@ const ExperienceLetter = ({navigation}) => {
             disabled={currentPage === totalPages}>
             <Text style={styles.pageButton}>Next</Text>
           </TouchableOpacity>
+          <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
         </View>
       </View>
     </View>

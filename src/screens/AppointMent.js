@@ -14,10 +14,11 @@ import {useNavigation} from '@react-navigation/native';
 import Header from '../components/Header';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {REACT_APP_API_BASE_URL} from '../constans/Constants';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const AppointMent = () => {
   const [data, setData] = useState([]);
-  const [itemsPerPage] = useState(15);
+  const [itemsPerPage,setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const navigation = useNavigation();
 
@@ -132,6 +133,10 @@ const AppointMent = () => {
             }>
             <Text style={styles.pageButton}>Next</Text>
           </TouchableOpacity>
+          <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
         </View>
       </View>
     </View>

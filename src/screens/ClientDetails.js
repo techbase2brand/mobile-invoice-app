@@ -15,12 +15,13 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
 import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const ClientDetails = ({navigation}) => {
   const [data, setData] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [itemsPerPage] = useState(15);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -180,6 +181,10 @@ const handleEdit = item => {
           onPress={() => setCurrentPage(currentPage + 1)}>
           <Text style={styles.pageBtn}>Next</Text>
         </TouchableOpacity>
+        <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
       </View>
 
       <Modal visible={isModalOpen} animationType="slide" transparent={true}>

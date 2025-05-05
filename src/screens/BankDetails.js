@@ -14,13 +14,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import Header from '../components/Header';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const BankDetails = ({navigation}) => {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const itemsPerPage = 15; // Set how many items per page you want
+  const [itemsPerPage, setItemsPerPage] = useState(15);
+  // Set how many items per page you want
   const totalPages = Math.ceil(data.length / itemsPerPage);
   console.log('datadata', data);
   // Function to paginate data
@@ -173,6 +175,10 @@ const handleEdit = item => {
           disabled={currentPage === totalPages}>
           <Text style={styles.pageButton}>Next</Text>
         </TouchableOpacity>
+        <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
       </View>
     </View>
   );

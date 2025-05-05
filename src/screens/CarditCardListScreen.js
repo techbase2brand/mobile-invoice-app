@@ -13,10 +13,11 @@ import Header from '../components/Header';
 import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const CreditCardListScreen = ({navigation}) => {
   const [data, setData] = useState([]);
-  const [itemsPerPage] = useState(15);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -149,6 +150,10 @@ const CreditCardListScreen = ({navigation}) => {
           onPress={() => setCurrentPage(prev => prev + 1)}>
           <Text style={styles.pageButton}>Next</Text>
         </TouchableOpacity>
+        <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
       </View>
     </View>
   );

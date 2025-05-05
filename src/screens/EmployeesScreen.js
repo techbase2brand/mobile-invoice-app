@@ -15,10 +15,11 @@ import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const EmployeesScreen = () => {
   const [data, setData] = useState([]);
-  const [itemsPerPage] = useState(15);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
@@ -185,6 +186,10 @@ const EmployeesScreen = () => {
           disabled={currentPage === totalPages}>
           <Text style={styles.paginateBtn}>Next</Text>
         </TouchableOpacity>
+        <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
       </View>
     </View>
   );

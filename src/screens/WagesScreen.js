@@ -15,10 +15,11 @@ import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const WagesScreen = ({navigation}) => {
   const [data, setData] = useState([]);
-  const [itemsPerPage] = useState(15);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDays, setSelectedDays] = useState('');
@@ -322,7 +323,7 @@ const WagesScreen = ({navigation}) => {
         }
       />
 
-      {currentItems.length !== 0 && (
+      {/* {currentItems.length !== 0 && (
         <View style={styles.pagination}>
           {[...Array(totalPages)].map((_, index) => (
             <TouchableOpacity key={index} onPress={() => paginate(index + 1)}>
@@ -330,7 +331,28 @@ const WagesScreen = ({navigation}) => {
             </TouchableOpacity>
           ))}
         </View>
-      )}
+      )} */}
+
+<View style={styles.paginationContainer}>
+        <TouchableOpacity
+          onPress={() => setCurrentPage(Math.max(1, currentPage - 1))}
+          disabled={currentPage === 1}>
+          <Text style={styles.pageButton}>Previous</Text>
+        </TouchableOpacity>
+        <Text
+          style={
+            styles.pageText
+          }>{`Page ${currentPage} of ${totalPages}`}</Text>
+        <TouchableOpacity
+          onPress={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage === totalPages}>
+          <Text style={styles.pageButton}>Next</Text>
+        </TouchableOpacity>
+        <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
+      </View>
     </View>
   );
 };
@@ -406,15 +428,30 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     fontSize: 14,
   },
-  pagination: {
+  // pagination: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'center',
+  //   marginVertical: 10,
+  // },
+  // pageButton: {
+  //   marginHorizontal: 6,
+  //   fontSize: 16,
+  //   color: 'blue',
+  // },
+  paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginVertical: 10,
+    alignItems: 'center',
+    marginTop: 20,
   },
   pageButton: {
-    marginHorizontal: 6,
     fontSize: 16,
     color: 'blue',
+    paddingHorizontal: 10,
+  },
+  pageText: {
+    fontSize: 16,
+    marginHorizontal: 10,
   },
 });
 

@@ -16,6 +16,7 @@ import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../components/Header';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ItemsPerPageSelector from '../components/ItemsPerPageSelector';
 
 const ProjectList = ({navigation}) => {
   const options = [
@@ -55,8 +56,8 @@ const ProjectList = ({navigation}) => {
     useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
   const [activeModal, setActiveModal] = useState(null); // 'payment' | 'duplicate' | null
+  const [itemsPerPage, setItemsPerPage] = useState(15);
 
-  const itemsPerPage = 15;
   const totalPages = Math.ceil(invoices.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -68,15 +69,18 @@ const ProjectList = ({navigation}) => {
   const showEndDatePicker = () => setEndDatePickerVisibility(true);
   const hideEndDatePicker = () => setEndDatePickerVisibility(false);
 
-  const handleStartDateConfirm = date => {
+  const handleStartDateConfirm = async date => {
     setStartDate(date);
     hideStartDatePicker();
+    await AsyncStorage.setItem('startDate', date?.toISOString() || '');
   };
 
-  const handleEndDateConfirm = date => {
+  const handleEndDateConfirm = async date => {
     setEndDate(date);
     hideEndDatePicker();
+    await AsyncStorage.setItem('endDate', date?.toISOString() || '');
   };
+
   const handleToggleDropdown = itemId => {
     if (openItemId === itemId) {
       setOpenItemId(null);
@@ -151,9 +155,129 @@ const ProjectList = ({navigation}) => {
         });
     }
   };
-  const resetData = () => {
-    setEndDate(null);
+  // const resetData = () => {
+  //   setEndDate(null);
+  //   setStartDate(null);
+  // };
+
+  const resetData = async () => {
     setStartDate(null);
+    setEndDate(null);
+    try {
+      await AsyncStorage.removeItem('startDate');
+      await AsyncStorage.removeItem('endDate');
+    } catch (e) {
+      console.error('Error removing filters:', e);
+    }
+    fetchInvoicesWithDates();
+  };
+
+  useEffect(() => {
+    const loadDates = async () => {
+      try {
+        const savedStartDate = await AsyncStorage.getItem('startDate');
+        const savedEndDate = await AsyncStorage.getItem('endDate');
+        console.log('savedStartDatesavedStartDate', savedStartDate);
+        if (savedStartDate && savedEndDate) {
+          const start = new Date(savedStartDate);
+          const end = new Date(savedEndDate);
+          setStartDate(start);
+          setEndDate(end);
+          fetchInvoicesWithDates(start, end);
+        } else {
+          fetchInvoices();
+        }
+      } catch (e) {
+        console.error('Error loading dates:', e);
+        fetchInvoices(); // fallback in case of error
+      }
+    };
+
+    loadDates();
+  }, []);
+
+  const fetchInvoicesWithDates = async (start, end) => {
+    const token = await AsyncStorage.getItem('token');
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
+
+    let apiUrl = `${REACT_APP_API_BASE_URL}/api/get-invoices`;
+    let fromDate;
+
+    if (selectedDays) {
+      fromDate = new Date();
+      switch (selectedDays) {
+        case '7':
+          fromDate.setDate(fromDate.getDate() - 7);
+          break;
+        case '30':
+          fromDate.setMonth(fromDate.getMonth() - 1);
+          break;
+        case '90':
+          fromDate.setMonth(fromDate.getMonth() - 3);
+          break;
+        case '180':
+          fromDate.setMonth(fromDate.getMonth() - 6);
+          break;
+        case '365':
+          fromDate.setFullYear(fromDate.getFullYear() - 1);
+          break;
+      }
+      const formattedFromDate = `${fromDate
+        .getDate()
+        .toString()
+        .padStart(2, '0')}/${(fromDate.getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}/${fromDate.getFullYear()}`;
+      apiUrl += `?fromDate=${formattedFromDate}`;
+    }
+
+    if (paymentStatus) {
+      apiUrl += apiUrl.includes('?')
+        ? `&paymentStatus=${paymentStatus}`
+        : `?paymentStatus=${paymentStatus}`;
+    }
+
+    if (start && end) {
+      const formattedStartDate = start.toISOString();
+      const formattedEndDate = end.toISOString();
+      apiUrl += apiUrl.includes('?')
+        ? `&startDate=${formattedStartDate}&endDate=${formattedEndDate}`
+        : `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+    }
+
+    axios
+      .get(apiUrl, {headers})
+      .then(response => {
+        const filteredData = response?.data?.data?.filter(item => {
+          const invoiceDate = new Date(item.selectDate);
+          const selectDate = new Date(item.selectDate);
+          return (
+            (!searchTerm ||
+              item.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.accNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.bankNamed.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.accName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.mobileNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              item.tradeName
+                .toLowerCase()
+                .includes(searchTerm.toLowerCase())) &&
+            (!selectedDays || invoiceDate >= fromDate) &&
+            (!start || invoiceDate >= start) &&
+            (!end || selectDate <= end) &&
+            (!duplicateFilter || item.duplicate === duplicateFilter)
+          );
+        });
+        console.log('filteredDatafilteredData', filteredData);
+        setInvoices(filteredData.reverse());
+      })
+      .catch(error => {
+        console.error('Error fetching invoices:', error);
+      });
   };
   const fetchInvoices = async () => {
     const token = await AsyncStorage.getItem('token'); // Retrieve the token from localStorage
@@ -326,8 +450,6 @@ const ProjectList = ({navigation}) => {
         return '';
     }
   };
-
-  console.log('dudfff', duplicateFilter);
   // Rest of your existing logic (fetchInvoices, handleDelete, handleDuplicate, sorting, etc.)
   // Keep 23 the business logic functions same as original, just update the JSX to React Native components
 
@@ -634,6 +756,10 @@ const ProjectList = ({navigation}) => {
             disabled={currentPage === totalPages}>
             <Text>Next</Text>
           </TouchableOpacity>
+          <ItemsPerPageSelector
+            itemsPerPage={itemsPerPage}
+            setItemsPerPage={setItemsPerPage}
+          />
         </View>
       </ScrollView>
     </View>
