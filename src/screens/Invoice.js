@@ -906,16 +906,23 @@ const Invoice = ({navigation, route}) => {
               </View>
             </View>
 
-            <View style={[styles.footerWrapper, {backgroundColor:`${
-              companyLogo === "/uploads/SAI LOGO copy [Recovered]-01 2.png"
-                ? "#ef7e50"
-                : companyLogo === "/uploads/ks-01.png"
-                ? "#1F8C97"
-                : companyLogo ===
-                  "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
-                ? "#154880"
-                : "#042DA0"
-            }`,}]}>
+            <View
+              style={[
+                styles.footerWrapper,
+                {
+                  backgroundColor: `${
+                    companyLogo ===
+                    '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                      ? '#ef7e50'
+                      : companyLogo === '/uploads/ks-01.png'
+                      ? '#1F8C97'
+                      : companyLogo ===
+                        '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                      ? '#154880'
+                      : '#042DA0'
+                  }`,
+                },
+              ]}>
               <View
                 style={{
                   flexDirection: 'row',
@@ -953,14 +960,34 @@ const Invoice = ({navigation, route}) => {
                   />
                   <View>
                     <Text style={[styles.text, {color: '#fff'}]}>
-                      www.base2brand.com
+                      {companyLogo ===
+                      '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                        ? 'www.sailegalassociates.com'
+                        : companyLogo === '/uploads/ks-01.png'
+                        ? 'www.ksnetworkingsolutions.com'
+                        : companyLogo ===
+                          '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                        ? 'www.b2bcampus.com'
+                        : companyLogo == '/uploads/31-31.png'
+                        ? 'https://www.base2brand.com'
+                        : 'www.Aashuenterprises.com'}
                     </Text>
                     <Text
                       style={[styles.text, styles.link, {color: '#fff'}]}
                       onPress={() =>
                         Linking.openURL('mailto:hello@base2brand.com')
                       }>
-                      hello@base2brand.com
+                      {companyLogo ===
+                      '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                        ? 'hello@sailegalassociates.com'
+                        : companyLogo === '/uploads/ks-01.png'
+                        ? 'hello@ksnetworkingsolutions.com'
+                        : companyLogo ===
+                          '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                        ? 'hello@base2brand.com'
+                        : companyLogo == '/uploads/31-31.png'
+                        ? 'hello@base2brand.com'
+                        : 'hello@Aashuenterprises.com'}
                     </Text>
                   </View>
                 </View>
@@ -1183,8 +1210,8 @@ const styles = StyleSheet.create({
 
   footerWrapper: {
     // padding: 16,
-    width:'100%',
-    height:100
+    width: '100%',
+    height: 100,
   },
   footer: {
     // backgroundColor: '#fff',

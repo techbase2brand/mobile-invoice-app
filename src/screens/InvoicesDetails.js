@@ -117,13 +117,6 @@ const ProjectList = ({navigation}) => {
     setCurrentPage(pageNumber);
   };
 
-  const handleStartDateChange = date => {
-    setStartDate(date);
-  };
-
-  const handleEndDateChange = date => {
-    setEndDate(date);
-  };
   useEffect(() => {
     fetchInvoices();
   }, []);
@@ -155,29 +148,79 @@ const ProjectList = ({navigation}) => {
         });
     }
   };
-  // const resetData = () => {
-  //   setEndDate(null);
+  // const resetData = async () => {
   //   setStartDate(null);
+  //   setEndDate(null);
+  //   try {
+  //     await AsyncStorage.removeItem('startDate');
+  //     await AsyncStorage.removeItem('endDate');
+  //   } catch (e) {
+  //     console.error('Error removing filters:', e);
+  //   }
+  //   fetchInvoicesWithDates();
   // };
-
   const resetData = async () => {
     setStartDate(null);
     setEndDate(null);
+    setSelectedDays(null);
+    setPaymentStatus(null);
+    setDuplicateFilter(null);
+    setSearchTerm('');
     try {
-      await AsyncStorage.removeItem('startDate');
-      await AsyncStorage.removeItem('endDate');
+      await AsyncStorage.multiRemove([
+        'searchTerm',
+        'startDate',
+        'endDate',
+        'selectedDays',
+        'paymentStatus',
+        'duplicateFilter',
+      ]);
     } catch (e) {
       console.error('Error removing filters:', e);
     }
     fetchInvoicesWithDates();
   };
 
+  // useEffect(() => {
+  //   const loadDates = async () => {
+  //     try {
+  //       const savedStartDate = await AsyncStorage.getItem('startDate');
+  //       const savedEndDate = await AsyncStorage.getItem('endDate');
+  //       console.log('savedStartDatesavedStartDate', savedStartDate);
+  //       if (savedStartDate && savedEndDate) {
+  //         const start = new Date(savedStartDate);
+  //         const end = new Date(savedEndDate);
+  //         setStartDate(start);
+  //         setEndDate(end);
+  //         fetchInvoicesWithDates(start, end);
+  //       } else {
+  //         fetchInvoices();
+  //       }
+  //     } catch (e) {
+  //       console.error('Error loading dates:', e);
+  //       fetchInvoices(); // fallback in case of error
+  //     }
+  //   };
+
+  //   loadDates();
+  // }, []);
+
   useEffect(() => {
-    const loadDates = async () => {
+    const loadFilters = async () => {
       try {
+        // Load Date Filters
         const savedStartDate = await AsyncStorage.getItem('startDate');
         const savedEndDate = await AsyncStorage.getItem('endDate');
-        console.log('savedStartDatesavedStartDate', savedStartDate);
+
+        // Load Other Filters
+        const savedSelectedDays = await AsyncStorage.getItem('selectedDays');
+        const savedPaymentStatus = await AsyncStorage.getItem('paymentStatus');
+        const savedDuplicateFilter = await AsyncStorage.getItem(
+          'duplicateFilter',
+        );
+        const savedSearchTerm = await AsyncStorage.getItem('searchTerm');
+
+        // Set States if Available
         if (savedStartDate && savedEndDate) {
           const start = new Date(savedStartDate);
           const end = new Date(savedEndDate);
@@ -187,14 +230,29 @@ const ProjectList = ({navigation}) => {
         } else {
           fetchInvoices();
         }
+        if (savedSearchTerm) {
+          setSearchTerm(savedSearchTerm);
+        }
+
+        if (savedSelectedDays) {
+          setSelectedDays(savedSelectedDays);
+        }
+
+        if (savedPaymentStatus) {
+          setPaymentStatus(savedPaymentStatus);
+        }
+
+        if (savedDuplicateFilter) {
+          setDuplicateFilter(savedDuplicateFilter);
+        }
       } catch (e) {
-        console.error('Error loading dates:', e);
-        fetchInvoices(); // fallback in case of error
+        console.error('Error loading filters:', e);
+        fetchInvoices(); // fallback
       }
     };
 
-    loadDates();
-  }, []);
+    loadFilters();
+  }, [searchTerm, selectedDays, paymentStatus, duplicateFilter]);
 
   const fetchInvoicesWithDates = async (start, end) => {
     const token = await AsyncStorage.getItem('token');
@@ -372,20 +430,30 @@ const ProjectList = ({navigation}) => {
     setInvoices(invoices.filter(item => item._id !== deleteId));
   };
 
-  const handleSelectChange = value => {
+  const handleSelectChange = async value => {
     setSelectedDays(value);
+    await AsyncStorage.setItem('selectedDays', value);
     setModalVisible(false);
   };
 
-  const handleSelect = (type, value) => {
+  // const handleSelect = (type, value) => {
+  //   if (type === 'payment') {
+  //     setPaymentStatus(value);
+  //   } else if (type == 'duplicate') {
+  //     setDuplicateFilter(value);
+  //   }
+  //   setActiveModal(null);
+  // };
+  const handleSelect = async (type, value) => {
     if (type === 'payment') {
       setPaymentStatus(value);
-    } else if (type == 'duplicate') {
+      await AsyncStorage.setItem('paymentStatus', value);
+    } else if (type === 'duplicate') {
       setDuplicateFilter(value);
+      await AsyncStorage.setItem('duplicateFilter', value);
     }
     setActiveModal(null);
   };
-
   const handleSearch = () => {
     fetchInvoices();
   };
@@ -452,7 +520,6 @@ const ProjectList = ({navigation}) => {
   };
   // Rest of your existing logic (fetchInvoices, handleDelete, handleDuplicate, sorting, etc.)
   // Keep 23 the business logic functions same as original, just update the JSX to React Native components
-
   const renderItem = ({item, index}) => {
     const backgroundColor = index % 2 !== 0 ? '#e9e9e9' : '#fff';
     return (
@@ -470,37 +537,37 @@ const ProjectList = ({navigation}) => {
           </Text>
           <Text style={styles.cell}>
             {item?.selectDate
-              ? new Date(item.selectDate).toLocaleDateString()
+              ? new Date(item?.selectDate).toLocaleDateString()
               : 'N/A'}
           </Text>
-          <TouchableOpacity onPress={() => handleToggleDropdown(item._id)}>
+          <TouchableOpacity onPress={() => handleToggleDropdown(item?._id)}>
             <Text style={styles.actionButton}>...</Text>
           </TouchableOpacity>
         </View>
 
-        {openItemId === item._id && (
+        {openItemId === item?._id && (
           <View style={styles.actionMenu}>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('CreateInvoice', {invoiceId: item._id})
+                navigation.navigate('CreateInvoice', {invoiceId: item?._id})
               }
               style={styles.menuItem}>
               <Text>Edit</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => handleDelete(item._id)}
+              onPress={() => handleDelete(item?._id)}
               style={styles.menuItem}>
               <Text>Delete</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('Invoice', {invoiceId: item._id})
+                navigation.navigate('Invoice', {invoiceId: item?._id})
               }
               style={styles.menuItem}>
               <Text>Download PDF</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => handleDuplicate(item._id)}
+              onPress={() => handleDuplicate(item?._id)}
               style={styles.menuItem}>
               <Text>Duplicate</Text>
             </TouchableOpacity>
@@ -589,14 +656,16 @@ const ProjectList = ({navigation}) => {
             style={styles.input}
             placeholder="Search"
             value={searchTerm}
-            onChangeText={setSearchTerm}
+            onChangeText={async text => {
+              setSearchTerm(text);
+              await AsyncStorage.setItem('searchTerm', text);
+            }}
           />
-
           <TouchableOpacity
             style={styles.selector}
             onPress={() => setModalVisible(true)}>
             <Text style={styles.selectorText}>
-              {options.find(opt => opt.value === selectedDays)?.label ||
+              {options?.find(opt => opt?.value === selectedDays)?.label ||
                 'Select date range'}
             </Text>
           </TouchableOpacity>
@@ -631,8 +700,8 @@ const ProjectList = ({navigation}) => {
             style={styles.selector}
             onPress={() => setActiveModal('payment')}>
             <Text style={styles.selectorText}>
-              {paymentOptions.find(opt => opt.value === paymentStatus)?.label ||
-                'Payment status'}
+              {paymentOptions?.find(opt => opt.value === paymentStatus)
+                ?.label || 'Payment status'}
             </Text>
           </TouchableOpacity>
 
@@ -641,14 +710,13 @@ const ProjectList = ({navigation}) => {
             style={styles.selector}
             onPress={() => setActiveModal('duplicate')}>
             <Text style={styles.selectorText}>
-              {duplicateFilter === 'Duplicated'
+              {duplicateFilter == 'Duplicated'
                 ? 'Duplicated'
                 : duplicateFilter == 'Not Duplicated'
                 ? 'Not Duplicated'
                 : 'Filter by Duplicate Status'}
             </Text>
           </TouchableOpacity>
-
           {/* Shared Modal */}
           <Modal
             transparent
@@ -740,7 +808,6 @@ const ProjectList = ({navigation}) => {
           renderItem={renderItem}
           keyExtractor={item => item._id}
         />
-
         {/* Pagination */}
         <View style={styles.pagination}>
           <TouchableOpacity
@@ -818,13 +885,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#f2f2f2',
     paddingVertical: 10,
-    // justifyContent: 'space-between',
   },
   headerCell: {
-    // flex: 1, // adjust width here
     fontWeight: 'bold',
     textAlign: 'center',
-    // paddingLeft:40
   },
   itemContainer: {
     borderBottomWidth: 1,
@@ -834,7 +898,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // alignItems: 'center',
   },
   cell: {
     flex: 1,
@@ -896,7 +959,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#1D4ED8', // blue-700
+    backgroundColor: '#1D4ED8',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,

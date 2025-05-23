@@ -205,6 +205,8 @@ const ExperienceLetterPdf = ({navigation, route}) => {
                 : companyLogo ===
                   "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
                 ? "#154880"
+                : companyLogo == '/uploads/31-31.png'
+                    ? '#042DA0'
                 : "#042DA0"
             }`,}]}>
             <View style={styles.footer}>
@@ -234,9 +236,31 @@ const ExperienceLetterPdf = ({navigation, route}) => {
                     style={styles.icon}
                   />
                   <View>
-                    <Text style={styles.text}>www.sailegalassociates.com</Text>
                     <Text style={styles.text}>
-                      hello@sailegalassociates.com
+                    {companyLogo ===
+                    "/uploads/SAI LOGO copy [Recovered]-01 2.png"
+                      ? "www.sailegalassociates.com"
+                      : companyLogo === "/uploads/ks-01.png"
+                      ? "www.ksnetworkingsolutions.com"
+                      : companyLogo ===
+                        "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
+                      ? "www.b2bcampus.com"
+                       : companyLogo== "/uploads/31-31.png"
+                      ? "https://www.base2brand.com"
+                      : "www.Aashuenterprises.com"}
+                      </Text>
+                    <Text style={styles.text}>
+                    {companyLogo ===
+                    "/uploads/SAI LOGO copy [Recovered]-01 2.png"
+                      ? "hello@sailegalassociates.com"
+                      : companyLogo === "/uploads/ks-01.png"
+                      ? "hello@ksnetworkingsolutions.com"
+                      : companyLogo ===
+                        "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
+                      ? "hello@base2brand.com"
+                        : companyLogo== "/uploads/31-31.png"
+                      ? "hello@base2brand.com"
+                      : "hello@Aashuenterprises.com"}
                     </Text>
                   </View>
                 </View>

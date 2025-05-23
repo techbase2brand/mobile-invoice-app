@@ -155,7 +155,7 @@ const AppointMentPdf = ({route}) => {
                 uri: `https://invoice-backend.base2brand.com${data?.companyLogo}`,
               }}
               style={{
-                width: 180,
+                width: 240,
                 height: 80,
                 marginTop: 10,
                 alignSelf: 'center',
@@ -171,7 +171,7 @@ const AppointMentPdf = ({route}) => {
           <Text
             style={{
               fontWeight: 'bold',
-              fontSize:24,
+              fontSize: 24,
               marginBottom: 10,
               color: `${
                 companyLogo === '/uploads/SAI LOGO copy [Recovered]-01 2.png'
@@ -181,6 +181,8 @@ const AppointMentPdf = ({route}) => {
                   : companyLogo ===
                     '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
                   ? '#154880'
+                  : companyLogo == '/uploads/31-31.png'
+                  ? '#042DA0'
                   : '#042DA0'
               }`,
             }}>
@@ -194,7 +196,24 @@ const AppointMentPdf = ({route}) => {
             //   contentWidth={width}
             source={{html: data?.appointMentData}}
           />
-          <View style={[styles.mainFooter,c]}>
+          <View
+            style={[
+              styles.mainFooter,
+              {
+                backgroundColor: `${
+                  companyLogo === '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                    ? '#ef7e50'
+                    : companyLogo === '/uploads/ks-01.png'
+                    ? '#1F8C97'
+                    : companyLogo ===
+                      '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                    ? '#154880'
+                    : companyLogo == '/uploads/31-31.png'
+                    ? '#042DA0'
+                    : '#042DA0'
+                }`,
+              },
+            ]}>
             <View style={styles.footer}>
               <View style={styles.middle}>
                 <View style={styles.iconText}>
@@ -222,9 +241,31 @@ const AppointMentPdf = ({route}) => {
                     style={styles.icon}
                   />
                   <View>
-                    <Text style={styles.text}>www.sailegalassociates.com</Text>
                     <Text style={styles.text}>
-                      hello@sailegalassociates.com
+                    {companyLogo ===
+                    "/uploads/SAI LOGO copy [Recovered]-01 2.png"
+                      ? "www.sailegalassociates.com"
+                      : companyLogo === "/uploads/ks-01.png"
+                      ? "www.ksnetworkingsolutions.com"
+                      : companyLogo ===
+                        "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
+                      ? "www.b2bcampus.com"
+                       : companyLogo== "/uploads/31-31.png"
+                      ? "https://www.base2brand.com"
+                      : "www.Aashuenterprises.com"}
+                    </Text>
+                    <Text style={styles.text}>
+                    {companyLogo ===
+                    "/uploads/SAI LOGO copy [Recovered]-01 2.png"
+                      ? "hello@sailegalassociates.com"
+                      : companyLogo === "/uploads/ks-01.png"
+                      ? "hello@ksnetworkingsolutions.com"
+                      : companyLogo ===
+                        "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
+                      ? "hello@base2brand.com"
+                        : companyLogo== "/uploads/31-31.png"
+                      ? "hello@base2brand.com"
+                      : "hello@Aashuenterprises.com"}
                     </Text>
                   </View>
                 </View>
@@ -265,7 +306,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f4f4f4',
     position: 'relative',
     height: 100,
-    marginTop:40
+    marginTop: 40,
   },
   footer: {
     flexDirection: 'row',
@@ -299,7 +340,7 @@ const styles = StyleSheet.create({
   },
   banner: {
     width: '100%',
-    height: 200,
+    height: 400,
     resizeMode: 'contain',
   },
   button: {
@@ -317,9 +358,9 @@ const styles = StyleSheet.create({
   },
   logoInvoiceOverlap: {
     width: 680,
-    height: 540,
+    height: 200,
     position: 'absolute',
-    top: '30%',
+    top: '50%',
     transform: 'translate(-50%, -50%)',
     left: '25%',
     transform: [{translateX: -90}, {translateY: -30}],

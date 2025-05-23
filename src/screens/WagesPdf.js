@@ -510,9 +510,8 @@ import {REACT_APP_API_BASE_URL} from '../constans/Constants';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import RNFS from 'react-native-fs';
 import ViewShot from 'react-native-view-shot';
-import { PDFDocument } from 'pdf-lib';
+import {PDFDocument} from 'pdf-lib';
 import Icon from 'react-native-vector-icons/Ionicons';
-
 
 const WagesPdf = ({navigation, route}) => {
   const viewRef = useRef();
@@ -604,35 +603,38 @@ const WagesPdf = ({navigation, route}) => {
     try {
       // 1. Capture the view as PNG image file
       const uri = await viewRef.current.capture();
-      console.log("Captured URI:", uri);
-  
+      console.log('Captured URI:', uri);
+
       // 2. Fetch binary data from local file URI
       const imageBuffer = await fetch(uri).then(res => res.arrayBuffer());
-  
+
       // 3. Create a PDF
       const pdfDoc = await PDFDocument.create();
       const page = pdfDoc.addPage([595.28, 841.89]); // A4
-  
+
       // 4. Embed image
       const pngImage = await pdfDoc.embedPng(imageBuffer);
       const pngDims = pngImage.scale(1);
       const pageWidth = 595.28;
       const pageHeight = 841.89;
-      
+
       // Original image size
       // Max image size with padding
-      const maxWidth = pageWidth - 60;  // 30 padding on each side
+      const maxWidth = pageWidth - 60; // 30 padding on each side
       const maxHeight = pageHeight - 60;
-      
+
       // Scale down proportionally if needed
-      let scale = Math.min(maxWidth / pngDims.width, maxHeight / pngDims.height);
+      let scale = Math.min(
+        maxWidth / pngDims.width,
+        maxHeight / pngDims.height,
+      );
       const scaledWidth = pngDims.width * scale;
       const scaledHeight = pngDims.height * scale;
-      
+
       // Center the image
       const x = (pageWidth - scaledWidth) / 2;
       const y = (pageHeight - scaledHeight) / 2;
-      
+
       page.drawImage(pngImage, {
         x,
         y,
@@ -645,23 +647,22 @@ const WagesPdf = ({navigation, route}) => {
       //   width: pngDims.width,
       //   height: pngDims.height,
       // });
-  
+
       // 5. Save and write PDF file
-      const base64Pdf = await pdfDoc.saveAsBase64({ dataUri: false });
+      const base64Pdf = await pdfDoc.saveAsBase64({dataUri: false});
       const pdfPath = `${RNFS.DocumentDirectoryPath}/Salary_slip.pdf`;
       await RNFS.writeFile(pdfPath, base64Pdf, 'base64');
-  
-      console.log("PDF saved to:", pdfPath);
-      Alert.alert("PDF Saved Successfully", );
+
+      console.log('PDF saved to:', pdfPath);
+      Alert.alert('PDF Saved Successfully');
       // 6. Share
       // await Share.open({
       //   url: `file://${pdfPath}`,
       //   type: 'application/pdf',
       // });
-  
     } catch (error) {
-      console.error("Error generating PDF:", error);
-      Alert.alert("PDF Error", error.message);
+      console.error('Error generating PDF:', error);
+      Alert.alert('PDF Error', error.message);
     }
   };
 
@@ -669,9 +670,9 @@ const WagesPdf = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-       <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backArrow}>←</Text>
-        </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Text style={styles.backArrow}>←</Text>
+      </TouchableOpacity>
       <TouchableOpacity
         style={styles.generatePdfButton}
         onPress={createPDF}
@@ -680,286 +681,321 @@ const WagesPdf = ({navigation, route}) => {
           {isGenerating ? 'Pdf Download' : 'Pdf Download'}
         </Text>
       </TouchableOpacity>
-      <ViewShot ref={viewRef} options={{ format: 'png', quality: 0.9 }}>
-      <ScrollView style={styles.scrollView}>
-      <Image
-          source={{
-            uri: `https://invoice-backend.base2brand.com${formData.companylogo}`,
-          }}
-          style={styles.logoInvoiceOverlap}
-        />
-        <View style={styles.header}>
+      <ViewShot ref={viewRef} options={{format: 'png', quality: 0.9}}>
+        <ScrollView style={styles.scrollView}>
           <Image
             source={{
               uri: `https://invoice-backend.base2brand.com${formData.companylogo}`,
             }}
-            style={styles.companyLogo}
-            resizeMode="contain"
+            style={styles.logoInvoiceOverlap}
           />
-          
+          <View style={styles.header}>
+            <Image
+              source={{
+                uri: `https://invoice-backend.base2brand.com${formData.companylogo}`,
+              }}
+              style={styles.companyLogo}
+              resizeMode="contain"
+            />
 
-          <Text style={[styles.headerText,{color:`${
-              companyLogo === "/uploads/SAI LOGO copy [Recovered]-01 2.png"
-                ? "#ef7e50"
-                : companyLogo === "/uploads/ks-01.png"
-                ? "#1F8C97"
-                : companyLogo ===
-                  "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
-                ? "#154880"
-                : "#042DA0"
-            }`,}]}>Salary Slip</Text>
-        </View>
-       
-        <View style={styles.content}>
-       
-          <View style={styles.salaryInfo}>
-            <View style={styles.row}>
-              <Text style={styles.label}>Salary Advice for The Month</Text>
-              <Text style={styles.value}>
-                {formatChoose(formData?.chooseDate)}
-              </Text>
-              <Text style={styles.value}>
-                {formatChooseDate(formData?.chooseDate)}
-              </Text>
-            </View>
-
-            <View style={styles.row}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Emp. Name</Text>
-                <Text style={styles.value}>{formData.employeeName}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Dept.</Text>
-                <Text style={styles.value}>{formData.department}</Text>
-              </View>
-            </View>
-
-            <View style={styles.row}>
-              <View style={styles.column}>
-                <Text style={styles.label}>F/H Name</Text>
-                <Text style={styles.value}>{formData.familyMember}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Designation</Text>
-                <Text style={styles.value}>{formData.designation}</Text>
-              </View>
-            </View>
-
-            <View style={styles.row}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Date Of Joining</Text>
-                <Text style={styles.value}>{formData.joinDate}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Employee Code</Text>
-                <Text style={styles.value}>{formData.empCode}</Text>
-              </View>
-            </View>
-
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Rate of salary/Wages</Text>
-              <Text style={styles.sectionTitle}>Deduction</Text>
-              <Text style={styles.sectionTitle}>Attendance/Leave</Text>
-            </View>
-
-            <View style={styles.salaryDetails}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Basic</Text>
-                <Text style={styles.value}>{formData.basic}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Health Insurance</Text>
-                <Text style={styles.value}>{formData.health}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Days of this month</Text>
-                <Text style={styles.value}>{formData.daysMonth}</Text>
-              </View>
-            </View>
-
-            <View style={styles.salaryDetails}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Medical</Text>
-                <Text style={styles.value}>{formData.med}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>EPF</Text>
-                <Text style={styles.value}>{formData.epf}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Working Days</Text>
-                <Text style={styles.value}>{formData.workingDays}</Text>
-              </View>
-            </View>
-
-            <View style={styles.salaryDetails}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Children</Text>
-                <Text style={styles.value}>{formData.children}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>TDS</Text>
-                <Text style={styles.value}>{formData.tds}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Casual Leave</Text>
-                <Text style={styles.value}>{formData.causelLeave}</Text>
-              </View>
-            </View>
-
-            <View style={styles.salaryDetails}>
-              <View style={styles.column}>
-                <Text style={styles.label}>House Rent</Text>
-                <Text style={styles.value}>{formData.house}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Prof Tax</Text>
-                <Text style={styles.value}>{formData.proftax}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Medical Leave</Text>
-                <Text style={styles.value}>{formData.medicalLeave}</Text>
-              </View>
-            </View>
-
-            <View style={styles.salaryDetails}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Conveyance</Text>
-                <Text style={styles.value}>{formData.conveyance}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Other Deductions</Text>
-                <Text style={styles.value}>{formData.otherDeduction}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Absent</Text>
-                <Text style={styles.value}>{formData.absent}</Text>
-              </View>
-            </View>
-
-            <View style={styles.salaryDetails}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Earning</Text>
-                <Text style={styles.value}>{formData.earning}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Total Deductions</Text>
-                <Text style={styles.value}>{deduction}</Text>
-              </View>
-              <View style={styles.column}>
-                {/* <Text style={styles.label}>Days Week Off</Text> */}
-                {/* <Text style={styles.value}>{formData.daysWeekOff}</Text> */}
-              </View>
-            </View>
-
-            <View style={styles.salaryDetails}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Arrear</Text>
-                <Text style={styles.value}>{formData.arrear}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Net Salary</Text>
-                <Text style={styles.value}>{finalAmount}</Text>
-              </View>
-              <View style={styles.column}>
-                {/* <Text style={styles.label}>Days LWP</Text>
-                <Text style={styles.value}>{formData.daysLWP}</Text> */}
-              </View>
-            </View>
-
-            <View style={styles.salaryDetails}>
-              <View style={styles.column}>
-                <Text style={styles.label}>Reimbursement</Text>
-                <Text style={styles.value}>{formData.reimbursement}</Text>
-              </View>
-              <View style={styles.column}>
-                <Text style={styles.label}>Total Rate Amount</Text>
-                <Text style={styles.value}>{totalRateAmount}</Text>
-              </View>
-              <View style={styles.column}>
-                {/* <Text style={styles.label}>Days Payable</Text>
-                <Text style={styles.value}>{formData.daysPayable}</Text> */}
-              </View>
-            </View>
-
-            <View style={styles.netSalaryWords}>
-              <Text style={styles.netSalaryText}>
-                Net Salary (in words): {amountInWords} Only/-
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              {/* This is a system generated PDF sign not required. */}
+            <Text
+              style={[
+                styles.headerText,
+                {
+                  color: `${
+                    companyLogo ===
+                    '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                      ? '#ef7e50'
+                      : companyLogo === '/uploads/ks-01.png'
+                      ? '#1F8C97'
+                      : companyLogo ===
+                        '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                      ? '#154880'
+                      : '#042DA0'
+                  }`,
+                },
+              ]}>
+              Salary Slip
             </Text>
           </View>
-          <View style={[styles.mainFooter,{backgroundColor:`${
-              companyLogo === "/uploads/SAI LOGO copy [Recovered]-01 2.png"
-                ? "#ef7e50"
-                : companyLogo === "/uploads/ks-01.png"
-                ? "#1F8C97"
-                : companyLogo ===
-                  "/uploads/Campus-logo-design-Trademark-1024x334 1.png"
-                ? "#154880"
-                : "#042DA0"
-            }`,}]}>
+
+          <View style={styles.content}>
+            <View style={styles.salaryInfo}>
+              <View style={styles.row}>
+                <Text style={styles.label}>Salary Advice for The Month</Text>
+                <Text style={styles.value}>
+                  {formatChoose(formData?.chooseDate)}
+                </Text>
+                <Text style={styles.value}>
+                  {formatChooseDate(formData?.chooseDate)}
+                </Text>
+              </View>
+
+              <View style={styles.row}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Emp. Name</Text>
+                  <Text style={styles.value}>{formData.employeeName}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Dept.</Text>
+                  <Text style={styles.value}>{formData.department}</Text>
+                </View>
+              </View>
+
+              <View style={styles.row}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>F/H Name</Text>
+                  <Text style={styles.value}>{formData.familyMember}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Designation</Text>
+                  <Text style={styles.value}>{formData.designation}</Text>
+                </View>
+              </View>
+
+              <View style={styles.row}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Date Of Joining</Text>
+                  <Text style={styles.value}>{formData.joinDate}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Employee Code</Text>
+                  <Text style={styles.value}>{formData.empCode}</Text>
+                </View>
+              </View>
+
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Rate of salary/Wages</Text>
+                <Text style={styles.sectionTitle}>Deduction</Text>
+                <Text style={styles.sectionTitle}>Attendance/Leave</Text>
+              </View>
+
+              <View style={styles.salaryDetails}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Basic</Text>
+                  <Text style={styles.value}>{formData.basic}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Health Insurance</Text>
+                  <Text style={styles.value}>{formData.health}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Days of this month</Text>
+                  <Text style={styles.value}>{formData.daysMonth}</Text>
+                </View>
+              </View>
+
+              <View style={styles.salaryDetails}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Medical</Text>
+                  <Text style={styles.value}>{formData.med}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>EPF</Text>
+                  <Text style={styles.value}>{formData.epf}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Working Days</Text>
+                  <Text style={styles.value}>{formData.workingDays}</Text>
+                </View>
+              </View>
+
+              <View style={styles.salaryDetails}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Children</Text>
+                  <Text style={styles.value}>{formData.children}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>TDS</Text>
+                  <Text style={styles.value}>{formData.tds}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Casual Leave</Text>
+                  <Text style={styles.value}>{formData.causelLeave}</Text>
+                </View>
+              </View>
+
+              <View style={styles.salaryDetails}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>House Rent</Text>
+                  <Text style={styles.value}>{formData.house}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Prof Tax</Text>
+                  <Text style={styles.value}>{formData.proftax}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Medical Leave</Text>
+                  <Text style={styles.value}>{formData.medicalLeave}</Text>
+                </View>
+              </View>
+
+              <View style={styles.salaryDetails}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Conveyance</Text>
+                  <Text style={styles.value}>{formData.conveyance}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Other Deductions</Text>
+                  <Text style={styles.value}>{formData.otherDeduction}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Absent</Text>
+                  <Text style={styles.value}>{formData.absent}</Text>
+                </View>
+              </View>
+
+              <View style={styles.salaryDetails}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Earning</Text>
+                  <Text style={styles.value}>{formData.earning}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Total Deductions</Text>
+                  <Text style={styles.value}>{deduction}</Text>
+                </View>
+                <View style={styles.column}>
+                  {/* <Text style={styles.label}>Days Week Off</Text> */}
+                  {/* <Text style={styles.value}>{formData.daysWeekOff}</Text> */}
+                </View>
+              </View>
+
+              <View style={styles.salaryDetails}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Arrear</Text>
+                  <Text style={styles.value}>{formData.arrear}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Net Salary</Text>
+                  <Text style={styles.value}>{finalAmount}</Text>
+                </View>
+                <View style={styles.column}>
+                  {/* <Text style={styles.label}>Days LWP</Text>
+                <Text style={styles.value}>{formData.daysLWP}</Text> */}
+                </View>
+              </View>
+
+              <View style={styles.salaryDetails}>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Reimbursement</Text>
+                  <Text style={styles.value}>{formData.reimbursement}</Text>
+                </View>
+                <View style={styles.column}>
+                  <Text style={styles.label}>Total Rate Amount</Text>
+                  <Text style={styles.value}>{totalRateAmount}</Text>
+                </View>
+                <View style={styles.column}>
+                  {/* <Text style={styles.label}>Days Payable</Text>
+                <Text style={styles.value}>{formData.daysPayable}</Text> */}
+                </View>
+              </View>
+
+              <View style={styles.netSalaryWords}>
+                <Text style={styles.netSalaryText}>
+                  Net Salary (in words): {amountInWords} Only/-
+                </Text>
+              </View>
+            </View>
+
             <View style={styles.footer}>
-              <View style={styles.middle}>
-                <View style={styles.iconText}>
-                  <Icon
-                    name="call"
-                    size={20}
-                    color="#fff"
-                    style={styles.icon}
-                  />
-                  <View>
-                    <Text style={styles.text}>+919872084850</Text>
-                    <Text style={[styles.text, styles.bottomMargin]}>
-                      +918360116967
-                    </Text>
+              <Text style={styles.footerText}>
+                {/* This is a system generated PDF sign not required. */}
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.mainFooter,
+                {
+                  backgroundColor: `${
+                    companyLogo ===
+                    '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                      ? '#ef7e50'
+                      : companyLogo === '/uploads/ks-01.png'
+                      ? '#1F8C97'
+                      : companyLogo ===
+                        '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                      ? '#154880'
+                      : '#042DA0'
+                  }`,
+                },
+              ]}>
+              <View style={styles.footer}>
+                <View style={styles.middle}>
+                  <View style={styles.iconText}>
+                    <Icon
+                      name="call"
+                      size={20}
+                      color="#fff"
+                      style={styles.icon}
+                    />
+                    <View>
+                      <Text style={styles.text}>+919872084850</Text>
+                      <Text style={[styles.text, styles.bottomMargin]}>
+                        +918360116967
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-              x
-              <View style={styles.middle}>
-                <View style={styles.iconText}>
-                  <Icon
-                    name="globe"
-                    size={20}
-                    color="#fff"
-                    style={styles.icon}
-                  />
-                  <View>
-                    <Text style={styles.text}>www.sailegalassociates.com</Text>
-                    <Text style={styles.text}>
-                      hello@sailegalassociates.com
-                    </Text>
+                x
+                <View style={styles.middle}>
+                  <View style={styles.iconText}>
+                    <Icon
+                      name="globe"
+                      size={20}
+                      color="#fff"
+                      style={styles.icon}
+                    />
+                    <View>
+                      <Text style={styles.text}>
+                        {companyLogo ===
+                        '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                          ? 'www.sailegalassociates.com'
+                          : companyLogo === '/uploads/ks-01.png'
+                          ? 'www.ksnetworkingsolutions.com'
+                          : companyLogo ===
+                            '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                          ? 'www.b2bcampus.com'
+                          : companyLogo == '/uploads/31-31.png'
+                          ? 'https://www.base2brand.com'
+                          : 'www.Aashuenterprises.com'}
+                      </Text>
+                      <Text style={styles.text}>
+                        {companyLogo ===
+                        '/uploads/SAI LOGO copy [Recovered]-01 2.png'
+                          ? 'hello@sailegalassociates.com'
+                          : companyLogo === '/uploads/ks-01.png'
+                          ? 'hello@ksnetworkingsolutions.com'
+                          : companyLogo ===
+                            '/uploads/Campus-logo-design-Trademark-1024x334 1.png'
+                          ? 'hello@base2brand.com'
+                          : companyLogo == '/uploads/31-31.png'
+                          ? 'hello@base2brand.com'
+                          : 'hello@Aashuenterprises.com'}
+                      </Text>
+                    </View>
                   </View>
                 </View>
-              </View>
-              <View style={styles.address}>
-                <View style={styles.iconText}>
-                  <Icon
-                    name="location-sharp"
-                    size={20}
-                    color="#fff"
-                    style={styles.icon}
-                  />
-                  <View>
-                    <Text style={styles.text}>
-                      F-209, Phase 8B, Industrial Area, Sector 74, Sahibzada
-                      Ajit Singh Nagar,
-                    </Text>
-                    <Text style={styles.text}>Punjab 160074</Text>
+                <View style={styles.address}>
+                  <View style={styles.iconText}>
+                    <Icon
+                      name="location-sharp"
+                      size={20}
+                      color="#fff"
+                      style={styles.icon}
+                    />
+                    <View>
+                      <Text style={styles.text}>
+                        F-209, Phase 8B, Industrial Area, Sector 74, Sahibzada
+                        Ajit Singh Nagar,
+                      </Text>
+                      <Text style={styles.text}>Punjab 160074</Text>
+                    </View>
                   </View>
                 </View>
               </View>
             </View>
-
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
       </ViewShot>
     </SafeAreaView>
   );
@@ -971,11 +1007,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   scrollView: {
-    // flex: 1,
+    paddingBottom: 80,
   },
   backArrow: {
     fontSize: 24,
-    marginLeft:16,
+    marginLeft: 16,
     marginRight: 10,
   },
   header: {
@@ -1130,7 +1166,7 @@ const styles = StyleSheet.create({
     top: '40%',
     transform: 'translate(-50%, -50%)',
     left: '25%',
-    transform: [{ translateX: -90 }, { translateY: -30 }], 
+    transform: [{translateX: -90}, {translateY: -30}],
     opacity: 0.1,
   },
 
@@ -1138,8 +1174,8 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f4f4f4',
     position: 'relative',
-    height:100,
-    marginTop:10
+    height: 100,
+    marginTop: 10,
   },
   footer: {
     flexDirection: 'row',
