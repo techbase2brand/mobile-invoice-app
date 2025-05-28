@@ -39,6 +39,7 @@ const WagesScreen = ({navigation}) => {
   const [selectedId, setSelectedId] = useState(null);
   const [currentItems, setCurrentItems] = useState([]);
   const [selectedEmployeesData, setSelectedEmployeesData] = useState([]);
+  console.log('selectedEmployeesData>>', selectedEmployeesData);
   const [selectAll, setSelectAll] = useState(false);
   const [loading, setLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -51,7 +52,7 @@ const WagesScreen = ({navigation}) => {
     .filter(item => {
       if (!searchTerm) return true;
       return (
-        item.employeeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.empName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.familyMember?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.department?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.designation?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -132,6 +133,7 @@ const WagesScreen = ({navigation}) => {
         console.error('Error fetching data:', error);
       }
     };
+    
     fetchData();
 
     if (refreshKey == 1) {
@@ -223,75 +225,127 @@ const WagesScreen = ({navigation}) => {
     loadCSVData();
   }, []);
 
+  // const toggleSelectEmployee = item => {
+  //   if (currentItems.length == 0) {
+  //     toggleSelectEmployee1(item);
+  //     return;
+  //   } else {
+  //     const exists = selectedEmployeesData.find(
+  //       emp => emp['Employee Code'] === item['Employee Code'],
+  //     );
+
+  //     let updatedList;
+  //     if (exists) {
+  //       updatedList = selectedEmployeesData.filter(
+  //         emp => emp['Employee Code'] !== item['Employee Code'],
+  //       );
+  //     } else {
+  //       updatedList = [...selectedEmployeesData, item];
+  //     }
+
+  //     setSelectedEmployeesData(updatedList);
+
+  //     // Sync "Select All" checkbox state
+  //     if (updatedList.length === currentItems.length) {
+  //       setSelectAll(true);
+  //     } else {
+  //       setSelectAll(false);
+  //     }
+  //   }
+  // };
+
+  // const toggleSelectAll = () => {
+  //   if (currentItems.length == 0) {
+  //     if (selectAll) {
+  //       setSelectedEmployeesData([]);
+  //       setSelectAll(false);
+  //     } else {
+  //       setSelectedEmployeesData(currentItems1);
+  //       setSelectAll(true);
+  //     }
+  //   } else {
+  //     if (selectAll) {
+  //       setSelectedEmployeesData([]);
+  //       setSelectAll(false);
+  //     } else {
+  //       setSelectedEmployeesData(currentItems);
+  //       setSelectAll(true);
+  //     }
+  //   }
+  // };
+
+  // const toggleSelectEmployee1 = item => {
+  //   console.log('item', item);
+  //   const exists = selectedEmployeesData?.find(
+  //     emp => emp?.empCode === item?.empCode, // Using empCode which matches your data
+  //   );
+
+  //   let updatedList;
+  //   if (exists) {
+  //     updatedList = selectedEmployeesData?.filter(
+  //       emp => emp?.empCode !== item?.empCode, // Fix here: use !== to remove the item
+  //     );
+  //   } else {
+  //     updatedList = [...selectedEmployeesData, item];
+  //   }
+  //   setSelectedEmployeesData(updatedList);
+
+  //   // Sync "Select All" checkbox state
+  //   if (updatedList.length === currentItems1.length) {
+  //     setSelectAll(true);
+  //   } else {
+  //     setSelectAll(false);
+  //   }
+  // };
+
+  const getEmpCode = item => item.empCode || item['Employee Code'];
+
   const toggleSelectEmployee = item => {
-    if(currentItems.length ==0){
-      toggleSelectEmployee1(item)
-    }else{
-    const exists = selectedEmployeesData.find(
-      emp => emp['Employee Code'] === item['Employee Code'],
-    );
-
-    let updatedList;
-    if (exists) {
-      updatedList = selectedEmployeesData.filter(
-        emp => emp['Employee Code'] !== item['Employee Code'],
+    const code = getEmpCode(item);
+    if (currentItems.length == 0) {
+      toggleSelectEmployee1(item);
+      return;
+    } else {
+      const exists = selectedEmployeesData.find(
+        emp => getEmpCode(emp) === code,
       );
-    } else { 
-      updatedList = [...selectedEmployeesData, item];
-    }
 
-    setSelectedEmployeesData(updatedList);
-
-    // Sync "Select All" checkbox state
-    if (updatedList.length === currentItems.length) {
-      setSelectAll(true);
-    } else {
-      setSelectAll(false);
-    }
-
-  };
-
-
-  };
-
-  const toggleSelectAll = () => {
-    if(currentItems.length==0){
-      if (selectAll) {
-        setSelectedEmployeesData([]);
-        setSelectAll(false);
+      let updatedList;
+      if (exists) {
+        updatedList = selectedEmployeesData.filter(
+          emp => getEmpCode(emp) !== code,
+        );
       } else {
-        setSelectedEmployeesData(currentItems1);
-        setSelectAll(true);
+        updatedList = [...selectedEmployeesData, item];
       }
-    }else{
-    if (selectAll) {
-      setSelectedEmployeesData([]);
-      setSelectAll(false);
-    } else {
-      setSelectedEmployeesData(currentItems);
-      setSelectAll(true);
+
+      setSelectedEmployeesData(updatedList);
+
+      const source = currentItems.length > 0 ? currentItems : currentItems1;
+      if (updatedList.length === source.length) {
+        setSelectAll(true);
+      } else {
+        setSelectAll(false);
+      }
     }
-  }
-}
+  };
 
   const toggleSelectEmployee1 = item => {
-    console.log('itteme', item);
-    const exists = selectedEmployeesData.find(
-      emp => emp.empCode === item.empCode,
-    );
+    const code = getEmpCode(item);
+
+    const exists = selectedEmployeesData.find(emp => getEmpCode(emp) === code);
 
     let updatedList;
     if (exists) {
       updatedList = selectedEmployeesData.filter(
-        emp => emp.empCode === item.empCode,
+        emp => getEmpCode(emp) !== code,
       );
     } else {
-      updatedList = [...selectedEmployeesData, item];
+      updatedList = [...selectedEmployeesData, {...item, empCode: code}];
     }
 
     setSelectedEmployeesData(updatedList);
 
-    // Sync "Select All" checkbox state
     if (updatedList.length === currentItems1.length) {
       setSelectAll(true);
     } else {
@@ -299,15 +353,18 @@ const WagesScreen = ({navigation}) => {
     }
   };
 
-  // const toggleSelectAll1 = () => {
-  //   if (selectAll) {
-  //     setSelectedEmployeesData([]);
-  //     setSelectAll(false);
-  //   } else {
-  //     setSelectedEmployeesData(currentItems1);
-  //     setSelectAll(true);
-  //   }
-  // };
+  const toggleSelectAll = () => {
+    const source = currentItems.length > 0 ? currentItems : currentItems1;
+
+    if (selectAll) {
+      setSelectedEmployeesData([]);
+      setSelectAll(false);
+    } else {
+      setSelectedEmployeesData(source);
+      setSelectAll(true);
+    }
+  };
+
   const sendEmail = async () => {
     const token = await AsyncStorage.getItem('token');
     console.log('tokentoken', token);
@@ -331,7 +388,7 @@ const WagesScreen = ({navigation}) => {
         selectedEmployees: selectedEmployeesData.map(emp => ({
           employeeId:
             emp.empCode || emp['Employee Code'] || emp.employeeId || '',
-          name: emp.employeeName || emp['Employee Name'] || emp.empName || '',
+          name: emp.empName || emp['Employee Name'] || emp.empName || '',
           fatherName:
             emp.familyMember || emp['F/H Name'] || emp.fatherName || '',
           email: emp.email || emp.Email || '', // Make sure email is present in CSV or data
@@ -398,21 +455,18 @@ const WagesScreen = ({navigation}) => {
   };
   const renderHeader = () => (
     <View style={styles.headerRow}>
-      <View style={styles.selectAllRow}>
-        <CheckBox
-          value={selectAll}
-          onValueChange={toggleSelectAll}
-        />
+      <View style={{transform: [{scale: 0.8}], marginBottom:10}}>
+        <CheckBox value={selectAll} onValueChange={toggleSelectAll} />
         {/* <Text>Select All</Text> */}
       </View>
-      <Text style={[styles.headerText, {paddingLeft: 0}]}>DATE</Text>
+      <Text style={[styles.headerText, {paddingLeft: 40}]}>DATE</Text>
       <Text style={[styles.headerText, {paddingLeft: 70}]}>EMP. NAME</Text>
       <Text style={[styles.headerText, {paddingLeft: 40}]}>F/H NAME</Text>
       <Text style={[styles.headerText, {paddingLeft: 50}]}>DEPT.</Text>
       <Text style={[styles.headerText, {paddingLeft: 60}]}>DESIGNATION</Text>
       <Text style={[styles.headerText, {paddingLeft: 30}]}>CODE</Text>
       <Text style={[styles.headerText, {paddingLeft: 60}]}>COMPANY</Text>
-      <Text style={[styles.headerText, {paddingLeft: 80}]}>RS</Text>
+      <Text style={[styles.headerText, {paddingLeft: 50}]}>RS</Text>
       <Text style={[styles.headerText, {paddingLeft: 100}]}>CREATE</Text>
     </View>
   );
@@ -455,6 +509,9 @@ const WagesScreen = ({navigation}) => {
     const isSelected = selectedEmployeesData.some(
       emp => emp['Employee Code'] === item['Employee Code'],
     );
+    const isSelected1 = selectedEmployeesData.some(
+      emp => emp?.empCode === item?.empCode,
+    );
     const chooseDate = item['Choose Date'];
     const employeeName = item['Employee Name'];
     const familyMember = item['F/H Name'];
@@ -466,22 +523,24 @@ const WagesScreen = ({navigation}) => {
     const _id = `${item['Employee Code']}-${Math.random()}`;
     return (
       <View style={styles.row}>
-        <CheckBox
-          value={isSelected}
-          onValueChange={() => toggleSelectEmployee(item)}
-        />
+        <View style={{transform: [{scale: 0.8}]}}>
+          <CheckBox
+            value={currentItems == 0 ? isSelected1 : isSelected}
+            onValueChange={() => toggleSelectEmployee(item)}
+          />
+        </View>
         <Text style={styles.cell}>
-          {chooseDate || 'Invalid Date' || item.chooseDate}
+          {chooseDate  || item.chooseDate}
         </Text>
         <Text style={styles.cell}>{employeeName || item.empName}</Text>
         <Text style={styles.cell}>
-          {familyMember || 'N/A' || item.familyMember}
+          {familyMember  || item.familyMember}
         </Text>
         <Text style={styles.cell}>
-          {department || 'N/A' || item.department}
+          {department || item.department}
         </Text>
         <Text style={styles.cell}>
-          {designation || 'N/A' || item.designation}
+          {designation  || item.designation}
         </Text>
         <Text style={styles.cell}>{empCode || item.empCode}</Text>
         <Text style={styles.cell}>{companyName || item.companyName}</Text>
